@@ -21,3 +21,8 @@ Testing math: $$\exists x\, x^2 = 3$$
 $$
 \sum_{i = 1}^n i = \frac{n(n + 1)}{2}
 $$
+
+Testing GIF:
+
+![](/animation/anim.gif)
+
