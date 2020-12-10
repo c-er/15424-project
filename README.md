@@ -44,8 +44,6 @@ $$
 And here's an animation that illustrates the meaning of the sign matrix.
 
 <p align="center">
-<img src="/animation/signmat_meaning.gif">
+<img src="animation/signmat_meaning.gif">
 </p>
-
-![](/animation/signmat_meaning.gif)
 
