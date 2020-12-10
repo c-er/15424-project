@@ -24,9 +24,6 @@ $$
 
 Testing GIF:
 
-![](/animation/anim.gif)
+![](/animation/signmat_meaning.gif)
 
-![](/animation/signmat_meaning.mp4)
-
-<video src="/animation/signmat_meaning.mp4" controls preload></video>
-
+Testing math 2: $\exists x\, x^2 = 3$.
