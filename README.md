@@ -26,3 +26,7 @@ Testing GIF:
 
 ![](/animation/anim.gif)
 
+![](/animation/signmat_meaning.mp4)
+
+<video src="/animation/signmat_meaning.mp4" controls preload></video>
+
