@@ -47,3 +47,5 @@ And here's an animation that illustrates the meaning of the sign matrix.
 <img src="/animation/signmat_meaning.gif">
 </p>
 
+![](/animation/signmat_meaning.gif)
+
