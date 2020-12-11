@@ -121,13 +121,21 @@ class PlotFunctions(GraphScene):
     sym3_1.set_color(PURPLE)
     sym3_1.move_to(mat[0][40])
 
+
     self.play(ApplyMethod(mat[0][26].set_color, WHITE), ApplyMethod(mat[0][33].set_color, WHITE), ApplyMethod(mat[0][40].set_color, WHITE))
-    self.play(AnimationGroup(ShowCreation(gp1_1),ShowCreation(gp2_1),ShowCreation(gp3_1), lag_ratio=0.2))
-    self.wait()
-    self.play(FadeOut(mat[0][26]), ReplacementTransform(gp1_1, sym1_1), run_time=1.5)
-    self.play(FadeOut(mat[0][33]), ReplacementTransform(gp2_1, sym2_1), run_time=1.5)
-    self.play(FadeOut(mat[0][40]), ReplacementTransform(gp3_1, sym3_1), run_time=1.5)
-    self.wait()
+    self.wait(1)
+    self.play(ReplacementTransform(mat[0][26], gp1_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(gp1_1, sym1_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(mat[0][33], gp2_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(gp2_1, sym2_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(mat[0][40], gp3_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(gp3_1, sym3_1), run_time=1)
+    self.wait(1)
 
     gp1_1 = Dot(color=BLUE).move_to(self.coords_to_point(-1, self.p1(-1)))
     gp2_1 = Dot(color=YELLOW).move_to(self.coords_to_point(-1, self.p2(-1)))
@@ -147,19 +155,40 @@ class PlotFunctions(GraphScene):
     sym3_2.set_color(PURPLE)
 
     self.play(ApplyMethod(mat[0][27].set_color, WHITE), ApplyMethod(mat[0][34].set_color, WHITE), ApplyMethod(mat[0][41].set_color, WHITE))
-    self.play(AnimationGroup(ShowCreation(gp1_1),ShowCreation(gp2_1),ShowCreation(gp3_1), lag_ratio=0.5))
-    self.wait()
-    self.play(FadeOut(mat[0][27]), ReplacementTransform(gp1_1, sym1_2), run_time=1.5)
-    self.play(FadeOut(mat[0][34]), ReplacementTransform(gp2_1, sym2_2), run_time=1.5)
-    self.play(FadeOut(mat[0][41]), ReplacementTransform(gp3_1, sym3_2), run_time=1.5)
-    self.wait()
+    self.wait(1)
+    self.play(ReplacementTransform(mat[0][27], gp1_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(gp1_1, sym1_2), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(mat[0][34], gp2_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(gp2_1, sym2_2), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(mat[0][41], gp3_1), run_time=1)
+    self.wait(1)
+    self.play(ReplacementTransform(gp3_1, sym3_2), run_time=1)
+    self.wait(1)
 
-    gp1_1 = self.get_graph(self.p1,color=BLUE,x_min=-1,x_max=1)
-    gp2_1 = self.get_graph(self.p2,color=YELLOW,x_min=-1,x_max=1)
-    gp3_1 = self.get_graph(self.p3,color=PURPLE,x_min=-1,x_max=1)
-    gp1_1.set_stroke(width=8)
-    gp2_1.set_stroke(width=8)
-    gp3_1.set_stroke(width=8)
+    gp1_3 = self.get_graph(self.p1,color=BLUE,x_min=-1,x_max=1)
+    gp2_3 = self.get_graph(self.p2,color=YELLOW,x_min=-1,x_max=1)
+    gp3_3 = self.get_graph(self.p3,color=PURPLE,x_min=-1,x_max=1)
+    gp1_3.set_stroke(width=8)
+    gp2_3.set_stroke(width=8)
+    gp3_3.set_stroke(width=8)
+
+    gp1_4 = Dot(color=BLUE).move_to(self.coords_to_point(1, self.p1(1)))
+    gp2_4 = Dot(color=YELLOW).move_to(self.coords_to_point(1, self.p2(1)))
+    gp3_4 = Dot(color=PURPLE).move_to(self.coords_to_point(1, self.p3(1)))
+    gp1_4.set_stroke(width=8)
+    gp2_4.set_stroke(width=8)
+    gp3_4.set_stroke(width=8)
+
+    gp1_5 = self.get_graph(self.p1,color=BLUE,x_min=1,x_max=2)
+    gp2_5 = self.get_graph(self.p2,color=YELLOW,x_min=1,x_max=2)
+    gp3_5 = self.get_graph(self.p3,color=PURPLE,x_min=1,x_max=2)
+    gp1_5.set_stroke(width=8)
+    gp2_5.set_stroke(width=8)
+    gp3_5.set_stroke(width=8)
 
     sym1_3 = TexMobject("-")
     sym1_3.move_to(mat[0][28])
@@ -171,21 +200,6 @@ class PlotFunctions(GraphScene):
     sym3_3.set_color(PURPLE)
     sym3_3.move_to(mat[0][42])
 
-    self.play(ApplyMethod(mat[0][28].set_color, WHITE), ApplyMethod(mat[0][35].set_color, WHITE), ApplyMethod(mat[0][42].set_color, WHITE))
-    self.play(AnimationGroup(ShowCreation(gp1_1),ShowCreation(gp2_1),ShowCreation(gp3_1), lag_ratio=0.2))
-    self.wait()
-    self.play(FadeOut(mat[0][28]), ReplacementTransform(gp1_1, sym1_3), run_time=1.5)
-    self.play(FadeOut(mat[0][35]), ReplacementTransform(gp2_1, sym2_3), run_time=1.5)
-    self.play(FadeOut(mat[0][42]), ReplacementTransform(gp3_1, sym3_3), run_time=1.5)
-    self.wait()
-
-    gp1_1 = Dot(color=BLUE).move_to(self.coords_to_point(1, self.p1(1)))
-    gp2_1 = Dot(color=YELLOW).move_to(self.coords_to_point(1, self.p2(1)))
-    gp3_1 = Dot(color=PURPLE).move_to(self.coords_to_point(1, self.p3(1)))
-    gp1_1.set_stroke(width=8)
-    gp2_1.set_stroke(width=8)
-    gp3_1.set_stroke(width=8)
-
     sym1_4 = TexMobject("0")
     sym1_4.move_to(mat[0][29])
     sym1_4.set_color(BLUE)
@@ -195,21 +209,6 @@ class PlotFunctions(GraphScene):
     sym3_4 = TexMobject("0")
     sym3_4.move_to(mat[0][43])
     sym3_4.set_color(PURPLE)
-
-    self.play(ApplyMethod(mat[0][29].set_color, WHITE), ApplyMethod(mat[0][36].set_color, WHITE), ApplyMethod(mat[0][43].set_color, WHITE))
-    self.play(AnimationGroup(ShowCreation(gp1_1),ShowCreation(gp2_1),ShowCreation(gp3_1), lag_ratio=0.5))
-    self.wait()
-    self.play(FadeOut(mat[0][29]), ReplacementTransform(gp1_1, sym1_4), run_time=1.5)
-    self.play(FadeOut(mat[0][36]), ReplacementTransform(gp2_1, sym2_4), run_time=1.5)
-    self.play(FadeOut(mat[0][43]), ReplacementTransform(gp3_1, sym3_4), run_time=1.5)
-    self.wait()
-
-    gp1_1 = self.get_graph(self.p1,color=BLUE,x_min=1,x_max=2)
-    gp2_1 = self.get_graph(self.p2,color=YELLOW,x_min=1,x_max=2)
-    gp3_1 = self.get_graph(self.p3,color=PURPLE,x_min=1,x_max=2)
-    gp1_1.set_stroke(width=8)
-    gp2_1.set_stroke(width=8)
-    gp3_1.set_stroke(width=8)
 
     sym1_5 = TexMobject("+")
     sym1_5.move_to(mat[0][30])
@@ -221,15 +220,18 @@ class PlotFunctions(GraphScene):
     sym3_5.set_color(PURPLE)
     sym3_5.move_to(mat[0][44])
 
-    self.play(ApplyMethod(mat[0][30].set_color, WHITE), ApplyMethod(mat[0][37].set_color, WHITE), ApplyMethod(mat[0][44].set_color, WHITE))
-    self.play(AnimationGroup(ShowCreation(gp1_1),ShowCreation(gp2_1),ShowCreation(gp3_1), lag_ratio=0.2))
+    self.play(AnimationGroup(ApplyMethod(mat[0][28].set_color, WHITE), ApplyMethod(mat[0][35].set_color, WHITE), ApplyMethod(mat[0][42].set_color, WHITE),
+      ApplyMethod(mat[0][29].set_color, WHITE), ApplyMethod(mat[0][36].set_color, WHITE), ApplyMethod(mat[0][43].set_color, WHITE),
+      ApplyMethod(mat[0][30].set_color, WHITE), ApplyMethod(mat[0][37].set_color, WHITE), ApplyMethod(mat[0][44].set_color, WHITE), lag_ratio=0.2))
+    self.play(AnimationGroup(ReplacementTransform(mat[0][28], gp1_3), ReplacementTransform(mat[0][35], gp2_3), ReplacementTransform(mat[0][42], gp3_3),
+      ReplacementTransform(mat[0][29], gp1_4), ReplacementTransform(mat[0][36], gp2_4), ReplacementTransform(mat[0][43], gp3_4),
+      ReplacementTransform(mat[0][30], gp1_5), ReplacementTransform(mat[0][37], gp2_5), ReplacementTransform(mat[0][44], gp3_5), lag_ratio=0.5), run_time=3)
     self.wait()
-    self.play(FadeOut(mat[0][30]), ReplacementTransform(gp1_1, sym1_5), run_time=1.5)
-    self.play(FadeOut(mat[0][37]), ReplacementTransform(gp2_1, sym2_5), run_time=1.5)
-    self.play(FadeOut(mat[0][44]), ReplacementTransform(gp3_1, sym3_5), run_time=1.5)
-    self.wait()
+    self.play(AnimationGroup(ReplacementTransform(gp1_3, sym1_3), ReplacementTransform(gp2_3, sym2_3), ReplacementTransform(gp3_3, sym3_3),
+      ReplacementTransform(gp1_4, sym1_4), ReplacementTransform(gp2_4, sym2_4), ReplacementTransform(gp3_4, sym3_4),
+      ReplacementTransform(gp1_5, sym1_5), ReplacementTransform(gp2_5, sym2_5), ReplacementTransform(gp3_5, sym3_5), lag_ratio=0.5), run_time=3)
     
-    self.wait(2)
+    self.wait(5)
 
 
 
