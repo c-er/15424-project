@@ -20,7 +20,7 @@ $$
 # Beyond $\ast$: Visualizing Quantifier Elimination for Real Arithmetic
 
 <p align="center">
-<img src="../logo.png">
+<img src="logo.png">
 </p>
 
 **Abstract**: The existence of a quantifier elimination algorithm for real arithmetic is one of the foundational results that enables formal reasoning and verification of CPS. Most of the well-known algorithms for quantifier elimination are extremely complicated, too inefficient to be used on even the simplest of formulae, or both. This makes studying quantifier elimination algorithms difficult. This project aims to rectify this problem by providing a writeup and implementation of the Cohen-Hörmander algorithm along with some visualizations to aid understanding.
@@ -105,7 +105,7 @@ $$
 And here's an animation that illustrates the meaning of the sign matrix.
 
 <p align="center">
-<img src="../animation/signmat_meaning.gif">
+<img src="animation/signmat_meaning.gif">
 </p>
 
 # Conclusion
