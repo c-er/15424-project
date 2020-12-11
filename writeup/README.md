@@ -2,7 +2,9 @@
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>
 window.MathJax = {
+  loader: {load: ['[tex]/color']},
   tex: {
+    packages: {'[+]': ['color']},
     inlineMath: [['$', '$'], ['\\(', '\\)']]
   }
 };
@@ -10,7 +12,7 @@ window.MathJax = {
 
 <div>
 $$
-\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\R}{\mathbb{R}}
 \newcommand{\inferrule}[3][]{\frac{#2}{#3}\,{#1}}
 $$
 </div>
@@ -18,7 +20,7 @@ $$
 # Beyond $\ast$: Visualizing Quantifier Elimination for Real Arithmetic
 
 <p align="center">
-<img src="logo.png">
+<img src="../logo.png">
 </p>
 
 **Abstract**: The existence of a quantifier elimination algorithm for real arithmetic is one of the foundational results that enables formal reasoning and verification of CPS. Most of the well-known algorithms for quantifier elimination are extremely complicated, too inefficient to be used on even the simplest of formulae, or both. This makes studying quantifier elimination algorithms difficult. This project aims to rectify this problem by providing a writeup and implementation of the Cohen-Hörmander algorithm along with some visualizations to aid understanding.
@@ -38,7 +40,7 @@ process behind the real arithmetic proof goals, and simply give inference rules 
 formula of real arithmetic (CITE HERE).
 
 $$
-\inferrule{\ast}{\,\Gamma \vdash \Delta\,}{\R}
+\inferrule{\ast}{\,\,\Gamma \vdash \Delta\,\,}{\color{blue}{\R}}
 $$
 
 Practically speaking, the real arithmetic proof goals that result from attempts to prove properties of CPS are often prohibitively complex for manual methods.
@@ -50,7 +52,7 @@ A little research would reveal a number of algorithms for automatically deciding
 - **Cylindrical-Algebraic Decomposition (CAD)** is the state of the art when it comes to practical QE, so it doesn't suffer from the inefficiency problem of Tarski's algorithm (CITE HERE). However, it is incredibly complicated: so much so that it took experts in the field 30 years to produce a working implementation (CITE HERE). As such, it is likely not suitable for a student in an introductory CPS class.
 - **Virtual substitution** is efficient (CITE HERE), and simple enough to be part of CMU's introductory 15-424 _Logical Foundations of Cyber-Physical Systems_ course. The only shortcoming of this algorithm is that it isn't complete, in the sense that there are theoretical limitations that prevent it from deciding the truth of arbitrary sentences of real arithmetic (CITE HERE). Understanding this algorithm is thus not equivalent to understanding what's going on behind the scenes of the $\R$ proof rule.
 
-However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm. It is simple enough to be described in full in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
+However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm (CITE ORIG HERE). It is simple enough to be described in full in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
 
 ## Related Work
 
@@ -63,6 +65,8 @@ Mention the CAD visualization guy.
 Terms, connectives, quantifiers, and their meaning (in brief)
 
 ## Real Analysis/Algebra
+
+IVT, polynomial stuff. Just state theorems, no proofs.
 
 # The Algorithm
 
@@ -101,7 +105,7 @@ $$
 And here's an animation that illustrates the meaning of the sign matrix.
 
 <p align="center">
-<img src="animation/signmat_meaning.gif">
+<img src="../animation/signmat_meaning.gif">
 </p>
 
 # Conclusion
