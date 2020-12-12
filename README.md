@@ -10,12 +10,12 @@ window.MathJax = {
 };
 </script>
 
-<div>
 $$
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
 \newcommand{\inferrule}[3][]{\frac{#2}{#3}\,{#1}}
 $$
-</div>
 
 # Beyond $\ast$: Visualizing Quantifier Elimination for Real Arithmetic
 
@@ -60,35 +60,162 @@ Mention the CAD visualization guy.
 
 # Background
 
+In this section, we very briefly review some of the background material that is necessary to properly
+define the problem solved by the Cohen-Hörmander algorithm. 
+
 ## Real Arithmetic
 
-Terms, connectives, quantifiers, and their meaning (in brief)
+The first-order theory of real closed fields is a
+formal language for stating properties of the real numbers. The language is built up recursively as
+follows:
+
+**Terms**: Terms are the construct that the language uses to refer to real numbers, or to combine existing
+numbers into other ones. They are built up via the following inference rules
+
+$$
+\inferrule{c \in \Q}{c\,\mathsf{term}}{} \qquad \qquad
+\inferrule{x\,\mathrm{var}}{x\,\mathsf{term}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 + e_2\,\mathsf{term}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 \cdot e_2\,\mathsf{term}}{}
+$$
+
+**Formulae:** Formulae are the construct that the language uses to express assertions about
+real numbers. The basic, or atomic, formulae are constructed as follows:
+
+$$
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 = e_2\,\mathsf{form}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 < e_2\,\mathsf{form}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 > e_2\,\mathsf{form}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 \leq e_2\,\mathsf{form}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 \geq e_2\,\mathsf{form}}{} \qquad \qquad
+$$
+
+Formulae can be joined together using boolean connectives:
+
+$$
+\inferrule{\varphi\,\mathsf{form}}{\neg\varphi\,\mathsf{form}}{} \qquad\qquad
+\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \wedge \psi\, \mathsf{form}}{} \qquad \qquad
+\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \vee \psi\, \mathsf{form}}{} \qquad \qquad
+\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \implies \psi\, \mathsf{form}}{} \qquad \qquad
+\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \iff \psi\, \mathsf{form}}{}
+$$
+
+Finally, variables occuring in terms can be given meaning by way of quantifiers.
+
+$$
+\inferrule{\varphi\,\mathsf{form}\qquad x\,\mathsf{var}}{\forall x\, \varphi\,\mathsf{form}}{} \qquad\qquad
+\inferrule{\varphi\,\mathsf{form}\qquad x\,\mathsf{var}}{\exists x\, \varphi\,\mathsf{form}}{} \qquad\qquad
+$$
+
+Real arithmetic is what we get when we give these syntactic constructs their natural meaning over
+the real numbers. That is, the symbols $+, \cdot, =, <$, etc denote addition, multiplication, equality,
+and comparison of real numbers respectively. Quantifiers are interpreted to range over the real numbers.
+
+With these constructs, we can formally express many properties of the real numbers.
+Some examples include:
+- Every number is positive, negative, or zero: $\forall x\, (x > 0 \vee x < 0 \vee x = 0)$.
+- Every number has an additive inverse: $\forall x\, \exists y\, (x + y = 0)$.
+- Every nonzero number has a multiplicative inverse: $\forall x\, (x = 0 \vee \exists y\, (x \cdot y = 1))$.
+However, not everything that we intuitively think of as a property of the real numbers can actually be
+accurately expressed in this language. A typical example is the supremum property: the assertion that
+every nonempty set of real numbers which is bounded above has a least upper bound has no equivalent
+in this language (CITE HERE). As we shall shortly see, the expressiveness (or lack thereof) of this language of (first-order)
+real arithmetic is key to the operation of the Cohen-Hörmander algorithm.
+
+Now we can properly define what the Cohen-Hörmander algorithm actually does. It is a quantifier-elimination
+algorithm: it takes as input a formula $\varphi$ in this language, and produces a formula $\psi$ which
+contains no quantifiers and whose free variables are a subset of the free variables of $\varphi$.
+Moreover, $\psi$ and $\varphi$ have the same truth value regardless of how we choose to substitute for
+the real variables.
+- $\exists y\, (x < y \wedge y \leq 0)$ might be reduced to $x < 0$, because regardless of which value in $\R$
+we choose to assign to $x$, the two formulaes are either both true or both false.
+- $\forall x\, (x > 0 \vee x < 0 \vee x = 0)$ might be reduced to $\top$, the formula which is always
+true. Indeed, since the original formula has no free variables, the quantifier-eliminated formula
+also cannot have free variables, and thus must be equivalent to either $\top$ (true) or $\bot$ (false).
 
 ## Real Analysis/Algebra
 
-IVT, polynomial stuff. Just state theorems, no proofs.
+In this section, we list a few definitions and theorems of basic analysis/algebra that are useful in understanding
+the Cohen-Hörmander algorithm. 
+
+**Definition** (Sign)**:** The sign of a real number $x$ is
+- $+$, or positive, when $x > 0$
+- $0$ when $x = 0$
+- $-$, or negative, when $x < 0$
+
+**Theorem** (Intermediate value)**:** If $f$ is a continuous function of $x$ (in particular, if $f$ is a polynomial in $x$),
+$a < b$, and the signs of $f(a)$ and $f(b)$ do not match, then $f$ has a root in $[a, b]$.
+
+**Definition** (Polynomials with rational coefficients)**:** $\Q[x]$ denotes the set of all polynomials in $x$
+with coefficients in $\Q$.
+
+**Theorem** (Polynomial division)**:** If $a, b \in \Q[x]$ and $b \neq 0$, there exists unique
+$q, r \in \Q[x]$ satisfying
+- $a = bq + r$
+- $\mathrm{deg}(r) < \mathrm{deg}(b)$.
 
 # The Algorithm
 
+Our approach will be to first treat the simpler univariate case: formulas of the form $\forall x\, \varphi$ or $\exists x\, \varphi$
+such that the only variable in $\varphi$ is $x$. Then we will discuss how to generalize to the general case.
 
-The first important observation that underlies the Cohen-Hörmander algorithm is that sentences of the form $\forall x\, \varphi$ or $\exists x\, \varphi$ are essentially assertions about the signs ($0$, positive, or negative) of polynomials. We build up to this realization from the following simple facts:
-- Terms of first-order real arithmetic are polynomials in $x$.
-- Atomic formulae in real arithmetic are equalities or inequalities between terms.
-- Since terms are polynomials, this means that every atomic formula is of the form $p_1 \textsf{ CMP } p_2$, where $\textsf{CMP}$ is one of: $=$, $<$, $>$, $\leq$, $\geq$.
-- The formula $p_1 \textsf{ CMP } p_2$ is equivalent to $p_1 - p_2 \textsf{ CMP } 0$ for any choice of $\textsf{CMP}$.
-- $p_1 - p_2$ is also a polynomial, and therefore $p_1 - p_2 \textsf{ CMP } 0$ expresses something about the sign of a polynomial.
+## Univariate Case
 
-The quantifier-free formula $\varphi$ is thus (equivalent to) a propositional combination of a bunch of assertions about the signs of some finite set $S_\varphi$ of polynomials. In other words, if we know the signs of all the polynomials in $S_\varphi$ at some point $x$, we can decide whether $\varphi$ is true or false at $x$. Now, how often do the signs of the polynomials in $S_\varphi$ change? Only finitely often - any given polynomial can only potentially change sign at its roots. Polynomials (with the zero polynomial being an easy edge case) have only finitely many roots, and $S_\varphi$ is a finite set of polynomials. Therefore, if we can obtain information about the signs of the polynomials in $S_\varphi$ at each of the roots of the polynomials and the intervals between the roots, we effectively capture the signs of all the polynomials in $S_\varphi$ at every $x \in \mathbb{R}$ in a finite data structure. This is exactly the **sign matrix** data structure computed in the Cohen-Hörmander algorithm.
+A priori, deciding the truth of a formula of the form $\forall x\, \varphi$ or $\exists x\, \varphi$ requires looping
+through every single $x \in \R$, substituting that value into $\varphi$, checking the result, and then
+combining the results for all $x \in \R$ in the manner that suits the quantifier. This approach works
+when the model we're concerned with is finite, but since $\R$ is very much not finite, this cannot
+possibly yield a useful algorithm. 
 
-More formally, the rows of the sign matrix are indexed by the polynomials in $S_\varphi$. If $x_1, \dots, x_n$ are an exhaustive list of all the roots of the polynomials in $S_\varphi$ with $x_1 < x_2 < \cdots < x_n$, then the other dimension of the sign matrix is indexed by 
+### Understanding the Sign Matrix
+
+The first step in unlocking a decision procedure for real arithmetic is to look closely at what formulae
+in this language can express. All formulae are ultimately built up from atomic formulae, and atomic formulae
+are built out of terms, so we'll start there.
+
+Recall the inductive construction of terms: we started with rational constants
+and variables (in our present case, only $x$), and we were allowed to combine terms into larger terms
+by adding and multiplying. Using multiplication only, starting with rational constants and $x$, we'll
+get terms of the form $qx^n$, where $q \in \Q$ and $n \in \N$. These are **monomials** (with rational coefficients) in $x$.
+Add addition into the mix, and since multiplication distributes over addition, we arrive at our first important observation:
+**a term is a polynomial in $x$ with rational coefficients.**
+
+Atomic formula were constructed as $e_1 \mathsf{ CMP } e_2$, where $e_1, e_2$ are terms and $\mathsf{CMP}$
+was one of $=$, $<$, $>$, $\leq$, or $\geq$. Since terms are polynomials in $x$, atomic formulae are
+comparisons between polynomials. But $e_1 \mathsf{ CMP } e_2$ is equivalent to $e_1 + (-1) \cdot e_2 \mathsf{ CMP } 0$
+for any choice of $\mathsf{CMP}$, and $e_1 + (-1) \cdot e_2$ is also a term, and therefore a polynomial.
+Thus, **every atomic formula asserts something about the sign of a polynomial.** For example, the atomic formula $3x^2 + 2 \geq 2x + 1$
+equivalently asserts that the polynomial $3x^2 - 2x + 1$ is positive or zero.
+
+This realization is key to transforming our infinite loop over $\R$ that we had in our initially proposed
+algorithm into a finite loop. Polynomials (with the zero polynomial being an easy special case) have only
+finitely many roots. Between two consecutive roots (also before the first root, and after the last root),
+a polynomial must maintain the same sign, since
+if it changed sign, by the intermediate value theorem there would have to be another root in the middle.
+The upshot is that if $x_1, \dots, x_n$ are the roots of a polynomial $p$ in increasing order, then by knowing the sign of $p$
+at one point in each of the intervals $(-\infty, x_1), (x_1, x_2), \dots, (x_{n - 1}, x_n), (x_n, \infty)$,
+we know the sign of $p$ for every $x \in \R$. Since the truth of an atomic formula $p \mathsf{ CMP } 0$ at a point $x$
+is a function of the sign of $p$ at $x$, **given a finite data structure which specifies the signs of $p$ over the intervals $(-\infty, x_1), (x_1, x_2), \dots, (x_{n - 1}, x_n), (x_n, \infty)$, we can evaluate an atomic formula at any $x \in \R$.**
+
+A quantifier-free formula $\varphi$ is just a propositional combination of a bunch of atomic formulae,
+and as such, knowing the truth value of each of the composite atomic formulae is sufficient to determine
+the truth value of $\varphi$. Above we discussed how to obtain a finite data structure that gives us
+the truth value of an atomic formulae at any $x \in \R$ - so all we need to do is combine these data
+structures for all the (finitely many) atomic formulae that are in $\varphi$, and we obtain a finite
+data structure which can be used to evaluate $\varphi$ at any point $x$. This is exaftly the **sign matrix**
+data structure which is the core of the Cohen-Hörmander algorithm.
+
+More formally, the rows of the sign matrix are indexed by the polynomials in $S_\varphi$. If $x_1, \dots, x_n$ are an exhaustive list of all the roots of the polynomials in $S_\varphi$ with $x_1 < x_2 < \cdots < x_n$, then the columns of the sign matrix are indexed by the list
 
 $$(-\infty, x_1), x_1, (x_1, x_2), x_2, \dots, (x_{n - 1}, x_n), x_n, (x_n, \infty)$$
 
-i.e, the singleton sets at the roots and the intervals between them. The entry of the sign matrix at column $p \in S_\varphi$
-and row $I$ is just the sign of $p$ on $I$. Note that the signs of all the polynomials are invariant on each interval, because
+i.e, the singleton sets at the roots and the intervals between them. The entry of the sign matrix at row $p \in S_\varphi$
+and column $I$ is just the sign of $p$ on $I$. Note that the signs of all the polynomials are invariant on each interval, because
 if a polynomial (or any continuous function, for that matter) changes sign on an interval, it must have a root in that interval.
 But since $x_1, \dots, x_n$ is a list of ALL of the roots of the polynomials in $S_\varphi$, and no interval listed above
-contains any of these points, this is not possible.
+contains any of these points, this is not possible. Note also that in this case, where we potentially have multiple
+polynomials, we do need to specify the sign of each polynomial at each root: the presence of $x_i$ as a column only
+means that $x_i$ is a root of one of the polynomials involved - the other polynomials may have nonzero sign at $x_i$.
 
 Here's an example of a sign matrix for the set of polynomials $\{p_1, p_2, p_3\}$,
 where $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$.
@@ -105,11 +232,33 @@ $$
 And here's an animation that illustrates the meaning of the sign matrix.
 
 <p align="center">
-<img src="animation/signmat_meaning.gif">
+<img src="animation/gif/signmat_meaning.gif">
 </p>
+
+Finally, here's an animation that shows how this sign matrix can be used to compute the truth value
+of the formula $\forall x\, [(p_1(x) \geq 0 \wedge p_2(x) \geq 0) \vee (p_3(x) > 0)]$. Note how
+the fact that the signs of the polynomials (and thus the truth values of the atomic formulae) are invariant
+over each column of the sign matrix allows us to effectively iterate over all of $\R$ by only checking
+each column of the sign matrix.
+
+<p align="center">
+<img src="animation/gif/signmat_usage.gif">
+</p>
+
+One important thing to note is that while the sign matrix relies crucially on the ordering of the
+roots of the polynomials involved, it doesn't actually contain any numerical information about the
+roots themselves. In our toy example, it's easy to see that $x_1 = -1$ and $x_2 = 1$, but this isn't
+recorded in the sign matrix, nor is it necessary for the final decision procedure.
+
+### Computing the Sign Matrix
+
+Unfortunately, building the sign matrix for an arbitrary set of polynomials isn't as simple as telling
+the computer to "draw a graph," as we did in the animation above.
 
 # Conclusion
 
 # Deliverables
 
 # References
+
+Pandoc
