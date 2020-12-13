@@ -60,7 +60,7 @@ function assert(b) {
 // output
 
 function log(s) {
-  var loc = document.getElementById("output");
+  var loc = document.getElementById("outputSM");
   var text = document.createTextNode(s + "\n");
   loc.appendChild(text);
 }
@@ -69,9 +69,7 @@ function log_sil(s, sil) {
   if(sil) {
     return;
   }
-  var loc = document.getElementById("output");
-  var text = document.createTextNode(s + "\n");
-  loc.appendChild(text);
+  log(s);
 }
 
 // print a sign matrix
