@@ -495,9 +495,9 @@ each polynomial in each row to its sign. For example, here are the "mathematical
 of $\{p_1, p_2, p_3\}$, where $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$.
 \\[
 \begin{array}{cccccc}
-    & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, \infty) \\
-p_1 & + & 0 & - & 0 & + \\
-p_2 & - & 0 & + & + & + \\
+    & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, \infty) \\\\
+p_1 & + & 0 & - & 0 & + \\\\
+p_2 & - & 0 & + & + & + \\\\
 p_3 & + & + & + & 0 & -
 \end{array}
 \\]
