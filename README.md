@@ -73,38 +73,38 @@ follows:
 numbers into other ones. They are built up via the following inference rules
 
 $$
-\inferrule{c \in \Q}{c\,\mathsf{term}}{} \qquad \qquad
-\inferrule{x\,\mathrm{var}}{x\,\mathsf{term}}{} \qquad \qquad
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 + e_2\,\mathsf{term}}{} \qquad \qquad
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 \cdot e_2\,\mathsf{term}}{}
+\inferrule{c \in \Q}{c\,\mathsf{term}}{} \qquad
+\inferrule{x\,\mathsf{var}}{x\,\mathsf{term}}{} \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 + e_2\,\mathsf{term}}{} \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 \cdot e_2\,\mathsf{term}}{}
 $$
 
 **Formulae:** Formulae are the construct that the language uses to express assertions about
 real numbers. The basic, or atomic, formulae are constructed as follows:
 
 $$
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 = e_2\,\mathsf{form}}{} \qquad \qquad
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 < e_2\,\mathsf{form}}{} \qquad \qquad
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 > e_2\,\mathsf{form}}{} \qquad \qquad
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 \leq e_2\,\mathsf{form}}{} \qquad \qquad
-\inferrule{e_1\,\mathsf{term}\qquad e_2\,\mathsf{term}}{e_1 \geq e_2\,\mathsf{form}}{} \qquad \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 = e_2\,\mathsf{form}}{} \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 < e_2\,\mathsf{form}}{} \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 > e_2\,\mathsf{form}}{} \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 \leq e_2\,\mathsf{form}}{} \qquad
+\inferrule{e_1\,\mathsf{term}\quad e_2\,\mathsf{term}}{e_1 \geq e_2\,\mathsf{form}}{} \qquad
 $$
 
 Formulae can be joined together using boolean connectives:
 
 $$
-\inferrule{\varphi\,\mathsf{form}}{\neg\varphi\,\mathsf{form}}{} \qquad\qquad
-\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \wedge \psi\, \mathsf{form}}{} \qquad \qquad
-\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \vee \psi\, \mathsf{form}}{} \qquad \qquad
-\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \implies \psi\, \mathsf{form}}{} \qquad \qquad
-\inferrule{\varphi\,\mathsf{form}\qquad \psi\,\mathsf{form}}{\varphi \iff \psi\, \mathsf{form}}{}
+\inferrule{\varphi\,\mathsf{form}}{\neg\varphi\,\mathsf{form}}{} \qquad
+\inferrule{\varphi\,\mathsf{form}\quad \psi\,\mathsf{form}}{\varphi \wedge \psi\, \mathsf{form}}{} \qquad 
+\inferrule{\varphi\,\mathsf{form}\quad \psi\,\mathsf{form}}{\varphi \vee \psi\, \mathsf{form}}{} \qquad
+\inferrule{\varphi\,\mathsf{form}\quad \psi\,\mathsf{form}}{\varphi \implies \psi\, \mathsf{form}}{} \qquad
+\inferrule{\varphi\,\mathsf{form}\quad \psi\,\mathsf{form}}{\varphi \iff \psi\, \mathsf{form}}{}
 $$
 
 Finally, variables occuring in terms can be given meaning by way of quantifiers.
 
 $$
-\inferrule{\varphi\,\mathsf{form}\qquad x\,\mathsf{var}}{\forall x\, \varphi\,\mathsf{form}}{} \qquad\qquad
-\inferrule{\varphi\,\mathsf{form}\qquad x\,\mathsf{var}}{\exists x\, \varphi\,\mathsf{form}}{} \qquad\qquad
+\inferrule{\varphi\,\mathsf{form}\quad x\,\mathsf{var}}{\forall x\, \varphi\,\mathsf{form}}{} \qquad
+\inferrule{\varphi\,\mathsf{form}\quad x\,\mathsf{var}}{\exists x\, \varphi\,\mathsf{form}}{} \qquad
 $$
 
 Real arithmetic is what we get when we give these syntactic constructs their natural meaning over
@@ -116,11 +116,12 @@ Some examples include:
 - Every number is positive, negative, or zero: $\forall x\, (x > 0 \vee x < 0 \vee x = 0)$.
 - Every number has an additive inverse: $\forall x\, \exists y\, (x + y = 0)$.
 - Every nonzero number has a multiplicative inverse: $\forall x\, (x = 0 \vee \exists y\, (x \cdot y = 1))$.
+
 However, not everything that we intuitively think of as a property of the real numbers can actually be
 accurately expressed in this language. A typical example is the supremum property: the assertion that
 every nonempty set of real numbers which is bounded above has a least upper bound has no equivalent
-in this language (CITE HERE). As we shall shortly see, the expressiveness (or lack thereof) of this language of (first-order)
-real arithmetic is key to the operation of the Cohen-Hörmander algorithm.
+in this language (CITE HERE). As we shall shortly see, the expressiveness (or lack thereof) of this language
+is key to the operation of the Cohen-Hörmander algorithm.
 
 Now we can properly define what the Cohen-Hörmander algorithm actually does. It is a quantifier-elimination
 algorithm: it takes as input a formula $\varphi$ in this language, and produces a formula $\psi$ which
@@ -138,18 +139,18 @@ also cannot have free variables, and thus must be equivalent to either $\top$ (t
 In this section, we list a few definitions and theorems of basic analysis/algebra that are useful in understanding
 the Cohen-Hörmander algorithm. 
 
-**Definition** (Sign)**:** The sign of a real number $x$ is
+**Definition** (Sign):The sign of a real number $x$ is
 - $+$, or positive, when $x > 0$
 - $0$ when $x = 0$
 - $-$, or negative, when $x < 0$
 
-**Theorem** (Intermediate value)**:** If $f$ is a continuous function of $x$ (in particular, if $f$ is a polynomial in $x$),
+**Theorem** (Intermediate value): If $f$ is a continuous function of $x$ (in particular, if $f$ is a polynomial in $x$),
 $a < b$, and the signs of $f(a)$ and $f(b)$ do not match, then $f$ has a root in $[a, b]$.
 
-**Definition** (Polynomials with rational coefficients)**:** $\Q[x]$ denotes the set of all polynomials in $x$
+**Definition** (Polynomials with rational coefficients): $\Q[x]$ denotes the set of all polynomials in $x$
 with coefficients in $\Q$.
 
-**Theorem** (Polynomial division)**:** If $a, b \in \Q[x]$ and $b \neq 0$, there exists unique
+**Theorem** (Polynomial division): If $a, b \in \Q[x]$ and $b \neq 0$, there exists unique
 $q, r \in \Q[x]$ satisfying
 - $a = bq + r$
 - $\mathrm{deg}(r) < \mathrm{deg}(b)$.
@@ -180,9 +181,9 @@ get terms of the form $qx^n$, where $q \in \Q$ and $n \in \N$. These are **monom
 Add addition into the mix, and since multiplication distributes over addition, we arrive at our first important observation:
 **a term is a polynomial in $x$ with rational coefficients.**
 
-Atomic formula were constructed as $e_1 \mathsf{ CMP } e_2$, where $e_1, e_2$ are terms and $\mathsf{CMP}$
+Atomic formula were constructed as $e_1 \textsf{ CMP } e_2$, where $e_1, e_2$ are terms and $\mathsf{CMP}$
 was one of $=$, $<$, $>$, $\leq$, or $\geq$. Since terms are polynomials in $x$, atomic formulae are
-comparisons between polynomials. But $e_1 \mathsf{ CMP } e_2$ is equivalent to $e_1 + (-1) \cdot e_2 \mathsf{ CMP } 0$
+comparisons between polynomials. But $e_1 \textsf{ CMP } e_2$ is equivalent to $e_1 + (-1) \cdot e_2 \textsf{ CMP } 0$
 for any choice of $\mathsf{CMP}$, and $e_1 + (-1) \cdot e_2$ is also a term, and therefore a polynomial.
 Thus, **every atomic formula asserts something about the sign of a polynomial.** For example, the atomic formula $3x^2 + 2 \geq 2x + 1$
 equivalently asserts that the polynomial $3x^2 - 2x + 1$ is positive or zero.
@@ -194,8 +195,10 @@ a polynomial must maintain the same sign, since
 if it changed sign, by the intermediate value theorem there would have to be another root in the middle.
 The upshot is that if $x_1, \dots, x_n$ are the roots of a polynomial $p$ in increasing order, then by knowing the sign of $p$
 at one point in each of the intervals $(-\infty, x_1), (x_1, x_2), \dots, (x_{n - 1}, x_n), (x_n, \infty)$,
-we know the sign of $p$ for every $x \in \R$. Since the truth of an atomic formula $p \mathsf{ CMP } 0$ at a point $x$
-is a function of the sign of $p$ at $x$, **given a finite data structure which specifies the signs of $p$ over the intervals $(-\infty, x_1), (x_1, x_2), \dots, (x_{n - 1}, x_n), (x_n, \infty)$, we can evaluate an atomic formula at any $x \in \R$.**
+we know the sign of $p$ for every $x \in \R$. Since the truth of an atomic formula $p \textsf{ CMP } 0$ at a point $x$
+is a function of the sign of $p$ at $x$, **given a finite data structure which specifies the signs of $p$ over the intervals $(-\infty, x_1), (x_1, x_2), \dots, (x_{n - 1}, x_n), (x_n, \infty)$, we can evaluate an atomic formula at any $x \in \R$.** Note that the signs at the points $x_1, \dots, x_n$ are all $0$,
+since $x_1, \dots, x_n$ are the roots of $p$, so in the case where we're dealing with just a single polynomial,
+we don't need to include the sign information at the roots in the data structure.
 
 A quantifier-free formula $\varphi$ is just a propositional combination of a bunch of atomic formulae,
 and as such, knowing the truth value of each of the composite atomic formulae is sufficient to determine
@@ -210,7 +213,7 @@ More formally, the rows of the sign matrix are indexed by the polynomials in $S_
 $$(-\infty, x_1), x_1, (x_1, x_2), x_2, \dots, (x_{n - 1}, x_n), x_n, (x_n, \infty)$$
 
 i.e, the singleton sets at the roots and the intervals between them. The entry of the sign matrix at row $p \in S_\varphi$
-and column $I$ is just the sign of $p$ on $I$. Note that the signs of all the polynomials are invariant on each interval, because
+and column $I$ is just the sign of $p$ on $I$. Just as before, note that the signs of all the polynomials are invariant on each interval, because
 if a polynomial (or any continuous function, for that matter) changes sign on an interval, it must have a root in that interval.
 But since $x_1, \dots, x_n$ is a list of ALL of the roots of the polynomials in $S_\varphi$, and no interval listed above
 contains any of these points, this is not possible. Note also that in this case, where we potentially have multiple
