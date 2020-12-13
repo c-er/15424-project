@@ -208,7 +208,8 @@ structures for all the (finitely many) atomic formulae that are in $\varphi$, an
 data structure which can be used to evaluate $\varphi$ at any point $x$. This is exaftly the **sign matrix**
 data structure which is the core of the Cohen-Hörmander algorithm.
 
-More formally, the rows of the sign matrix are indexed by the polynomials in $S_\varphi$. If $x_1, \dots, x_n$ are an exhaustive list of all the roots of the polynomials in $S_\varphi$ with $x_1 < x_2 < \cdots < x_n$, then the columns of the sign matrix are indexed by the list
+More formally, let $S_\varphi$ be the set of all polynomials that occur in atomic formulae within $\varphi$.
+Then the rows of the sign matrix are indexed by the polynomials in $S_\varphi$. If $x_1, \dots, x_n$ are an exhaustive list of all the roots of the polynomials in $S_\varphi$ with $x_1 < x_2 < \cdots < x_n$, then the columns of the sign matrix are indexed by the list
 
 $$(-\infty, x_1), x_1, (x_1, x_2), x_2, \dots, (x_{n - 1}, x_n), x_n, (x_n, \infty)$$
 
@@ -256,7 +257,89 @@ recorded in the sign matrix, nor is it necessary for the final decision procedur
 ### Computing the Sign Matrix
 
 Unfortunately, building the sign matrix for an arbitrary set of polynomials isn't as simple as telling
-the computer to "draw a graph," as we did in the animation above.
+the computer to "draw a graph," as we did in the animation above. However, to compute the sign matrix
+for the set of polynomials $\{p_1, \dots, p_n\}$, we first remove the $0$ polynomial if its in the set - it
+can be added back at the end of the algorithm by simply setting its sign to $0$ everywhere. 
+Then we construct a set containing the following polynomials:
+- $p_2, \dots, p_n$
+- $p_1'$
+- The remainder $r_1$ that results upon dividing $p_1$ by $p_1'$
+- The remainders $r_2, \dots, r_n$ that result upon dividing $p_1$ by $p_i$, for $2 \leq i \leq n$
+
+We recursively compute the sign matrix for this set, and use it to construct the sign matrix for $\{p_1, \dots, p_n\}$.
+It's not at all clear how the seemingly arbitrarily constructed polynomials above should help us build a sign
+matrix for $\{p_1, \dots, p_n\}$, so we first discuss that.
+
+Including $p_2, \dots, p_n$ makes sense: these polynomials are in the "target set" $\{p_1, \dots, p_n\}$ as well.
+Having information on how their signs change at their roots and the intervals between them certainly helps us
+build a sign matrix for $\{p_1, \dots, p_n\}$ - it reduces our worries to figuring out the behavior of $p_1$.
+
+The reason for including $p_1'$ is revealed by the following property: if $p_1'$ has no roots on an
+interval $(a, b)$, then $p_1$ can have at most one root in $(a, b)$. The reason for this is that in
+between any two distinct roots of $p_1$, there must exist a turning point of $p_1$, which corresponds
+to a root of $p_1'$.
+
+<p align="center">
+<img src="animation/gif/deriv_root.gif">
+</p>
+
+So, if $p_1$ has two distinct roots $x_1, x_2$ in $(a, b)$, $p_1'$ must also have a root in $(a, b)$;
+the contrapositive of this is the desired statement. The same reasoning holds for intervals that are
+infinite in either or both directions.
+Given a sign matrix for a set of polynomials including $p_1'$, we know that $p_1'$ will not have
+any roots in any of the intervals. This is the reason why we include $p_1'$ in the input for the
+recursive call - it limits the number of "extra roots" that $p_1$ can have to at most one per interval
+in the recursively computed sign matrix.
+
+The remainders are included to help us deduce the sign of $p_1$ at the roots of the recursively
+computed sign matrix. Since the $r_i$s are defined as remainders when doing polynomial division,
+there exist polynomials $q_i$, $1 \leq i \leq n$, such that
+
+$$
+\begin{align*}
+p_1(x) &= q_1(x)p_1'(x) + r_1(x) \\\\
+p_i(x) &= q_i(x)p_i(x) + r_i(x) \qquad (2 \leq i \leq n)
+\end{align*}
+$$
+
+for every $x \in \R$. In particular, we can substitute in any $x_k$ in the recursively computed
+sign matrix that is the root of $p_i$, and we get $p_1(x_k) = q_i(x_k)p_i(x_k) + r_i(x_k)$,
+but since $p_i(x_k) = 0$, this reduces to $p_1(x_k) = r_i(x_k)$. This means that the sign of $p_1$
+at any point $x_k$ in the recursively computed sign matrix that is the root of some $p_i$, $2 \leq i \leq n$
+(resp. $p_1'$) is the same as the sign of $r_i$ (resp. $r_1$). Since $r_i$ is part of the input to
+the recursive call, we can read the sign of $r_i$ at $x_k$ from the sign matrix to obtain the sign of $p_1$.
+
+<p align="center">
+<img src="animation/gif/remainder_reason.gif">
+</p>
+
+But why bother with division for this? Indeed, if we added the polynomials $p_1 + p_1', p_1 + p_2, \dots, p_1 + p_n$
+to the input lists instead of these remainders, we could obtain the signs of $p_1$ at
+the roots of the polynomials $p_1', p_2, \dots, p_n$ just as easily (the sign of $p_1$ at a root $x_k$
+of $p_i$ is the sign of $p_1 + p_i$ at $x_k$). The reason is that we want our recursion to terminate.
+Given an initial input set of polynomials $\{p_1, \dots, p_n\}$, we construct the set
+$\{p_1', p_2, \dots, p_n, r_1, \dots, r_n\}$ as the input to the recursive call. This set could potentially
+have more than twice the size of the initial set, so a termination argument for the recursion can't possibly
+be based on decreasing size of the input set. However, the following observations will help us:
+- $p_1'$ has smaller degree than $p_1$
+- Because $r_1$ is the remainder upon dividing $p_1$ by $p_1'$, $r_1$ has smaller degree than $p_1'$ (which already has smaller
+degree than $p_1$).
+- Because $r_i$ is the remainder upon dividing $p_1$ by $p_i$, $r_i$ has smaller degree than $p_i$.
+
+Now, if we choose $p_1$ such that it has maximal degree in the input set (so that every $p_i$ has degree
+at most the degree of $p_1$), the last observation can be replaced by
+- Because $r_i$ is the remainder upon dividing $p_1$ by $p_i$, $r_i$ has smaller degree than $\mathbf{p_1}$.
+
+Then, when we combine all the observations, we see that the input to the recursive call is constructed by removing
+a polynomial $p_1$ of maximal degree, and replacing it with a bunch of polynomials of smaller degree. Thus,
+every time we recurse
+- Either we degree the maximum degree of the input set,
+- Or we decrease the number of polynomials in the input having the maximum degree by $1$
+
+It's not difficult to see that a recursion having this property will terminate. Note that the alternative
+method that we proposed (replacing the remainders with $p_1 + p_1', p_1 + p_2, \dots, p_1 + p_n$), does
+not have the above properties, and there is no reason why the alternative method should produce a terminating
+recursion.
 
 # Conclusion
 
