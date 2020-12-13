@@ -9,6 +9,7 @@ window.MathJax = {
   }
 };
 </script>
+<script src="implementation/signmat.js"></script>
 
 $$
 \newcommand{\R}{\mathbb{R}}
@@ -340,6 +341,59 @@ It's not difficult to see that a recursion having this property will terminate. 
 method that we proposed (replacing the remainders with $p_1 + p_1', p_1 + p_2, \dots, p_1 + p_n$), does
 not have the above properties, and there is no reason why the alternative method should produce a terminating
 recursion.
+
+The base case of the recursion can be taken to be any set of constant polynomials. Constant polynomials
+never change their sign, so the sign matrix in this case has just one column: $(-\infty, \infty)$. The
+sign of a constant polynomial $p(x) = c$ is simply the sign of $c$.
+
+Almost all the pieces are in place. We've described how to construct the input to the recursive call,
+we've provided a base case, and we've argued that the recursion terminates. We now explain how to
+construct the solution given the output of the recursive call. Most of the work was already done in
+explaining the intuition behind choosing the input to the recursive call. The signs of $p_2, \dots, p_n$ at all of their roots and the intervals between them is part of the
+output of the recursive call already, so we worry only about $p_1$.
+
+We start by going through the roots $x_k$ in the recursively obtained sign matrix. Any time we see
+a $0$ in the column $x_k$ in any of the rows $p_1', p_2, \dots, p_n$ (i.e. $x_k$ is a root of at least one of $p_1', p_2, \dots, p_n$),
+we assign $p_1$ the sign of the corresponding remainder (i.e. $r_1$ for roots of $p_1'$, and $r_i$ for roots of $p_i$, $2 \leq i \leq n$).
+For now, we don't do anything for any of the other columns. Here's an example where $p_1(x) = x^2 -1, p_2(x) = x^2 + 2x$.
+
+<p align="center">
+<img src="animation/gif/signmat_roots.gif">
+</p>
+
+The column $x_1$ is a root of $p_2$, so the sign of the corresponding remainder $r_2$ is lifted to $p_1$.
+The column $x_2$ is not a root of either $p_1'$ or $p_2$, so we don't assign a sign to $p_1$ for that column -
+this is indicated by the $\varnothing$ sign. The column $x_3$ is a root of both $p_1'$ and $p_2$: in the animation
+we choose the lift the sign from $r_1$ to $p_1$, but lifting from $r_2$ would have yielded the same result.
+
+From this point onwards, we don't need any of the information from the remainder polynomials, so we
+implement a step which removes them from the sign matrix. In doing so, we may end up with "root" columns
+which are no longer the root of any polynomial in the matrix (e.g. $x_2$ in the following example). We merge
+these columns with their adjacent intervals.
+
+<p align="center">
+<img src="animation/gif/signmat_condense.gif">
+</p>
+
+Since all roots where we didn't deduce a sign for $p_1$ were removed in this last step, we now have
+a sign matrix with signs for $p_1$ at all roots. We just have to treat the intervals. 
+
+### Implementation
+
+An implementation of sign matrix computation via this algorithm is provided [here](https://github.com/c-er/15424-project/blob/main/implementation/signmat.js) 
+and is embedded below. Enter a comma separated list of polynomials with rational coefficients. Enough
+output will be produced to trace the steps described above. Here are a couple of example inputs:
+
+- $p_1(x) = x^2 -1, p_2(x) = x^2 + 2x$ can be entered as `x^2 - 1, x^2 + 2x`.
+- $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$ can be entered as `4x^2 - 4, -5x + 5, (x + 1)^3`.
+- If you try your own inputs, please keep them relatively small in length and degree. The implementation is not
+optimized in the least, and will likely not run in time for large inputs.
+
+<input id="polylist" name="polylist"> <label for="polylist">List of polynomials</label>
+<input type="checkbox" id="recursePrint" name="recursePrint"> <label for="recursePrint"> Print recursively (may generate a lot of output) </label>
+<br>
+<button type="button" onclick="doSMFull();">Run</button>
+<pre id="outputSM">
 
 # Conclusion
 

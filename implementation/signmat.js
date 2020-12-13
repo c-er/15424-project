@@ -1,10 +1,12 @@
 // all our polynomials are over the rationals
 Polynomial.setField("Q");
 
+// polynomial equality, because its not provided by the library
 function polyEq(p1, p2) {
   return p1.sub(p2).degree() == -Infinity;
 }
 
+// maps on polynomials, via key-value pair lists
 function mapGet(m, p) {
   for(e of m) {
     if(polyEq(e["key"], p)) {
@@ -32,53 +34,7 @@ function mapCopy(m) {
   return m2;
 }
 
-// define formula to decide up here
-// atomic formulae are defined as {poly: polynomial, signs: [list of signs]}
-// where the polynomial representation is described below
-// e.g. x^3 + 2x + 3 > 0 becomes {poly: [3, 2, 0, 1], signs: ["+"]}
-//     x^3 + 2x + 3 >= 0 becomes {poly: [3, 2, 0, 1], signs: ["+", "0"]}
-//      x^3 + 2x + 3 = 0 becomes {poly: [3, 2, 0, 1], signs: ["0"]}
-// connectives are defined as {sf: subformula(s), conn: or | and | not}
-// in the case of or/and connective, sf is expected to be a list of subformulae
-// for not, it is a single subformula
-
-// quantifier on the (single, for now) variable is defined separately below
-var p1 = new Polynomial("0.2x^2-0.2");
-var p2 = new Polynomial("0.05x^3+0.15x^2+0.15x+0.05");
-var p3 = new Polynomial("-0.25x+0.25");
-var quantifier = "forall"
-var formula = {
-  conn: "or",
-  sf: [
-    {
-      conn: "and",
-      sf: [
-        {
-          poly: p1,
-          signs: ["+", "0"]
-        },
-        {
-          poly: p2,
-          signs: ["+", "0"]
-        }
-      ]
-    },
-    {
-      poly: p3,
-      signs: ["+"]
-    }
-  ]
-}
-
-// var p1 = new Polynomial("x^2+0.000001");
-// var quantifier = "forall"
-// var formula = {
-//   poly: p1,
-//   signs: ["+"]
-// }
-
-// console.log(quantifier);
-// console.log(formula);
+var printRec;
 
 function flipSign(x) {
   if(x == "+") {
@@ -94,7 +50,6 @@ function flipSign(x) {
 
 // sign matrix is a list of maps mapping polynomials to their signs "+", "-", or "0"
 
-
 function assert(b) {
   if(b == true) {
     return;
@@ -102,20 +57,49 @@ function assert(b) {
   throw "assertion failure";
 }
 
-function printSM(sm) {
+// output
+
+function log(s) {
+  var loc = document.getElementById("output");
+  var text = document.createTextNode(s + "\n");
+  loc.appendChild(text);
+}
+
+function log_sil(s, sil) {
+  if(sil) {
+    return;
+  }
+  var loc = document.getElementById("output");
+  var text = document.createTextNode(s + "\n");
+  loc.appendChild(text);
+}
+
+// print a sign matrix
+
+function printSM(sm, sil) {
   for(row of sm) {
     s = row.ty + ": ";
     for(e of row.map) {
       s += "(" + e.key.toString() + ", " + e.value + "), "
     }
-    console.log(s);
+    log_sil(s, sil);
   }
+  log_sil("", sil);
 }
 
-function computeSM(polylist) {
+function printSMrow(row, sil) {
+  s = row.ty + ": ";
+  for(e of row.map) {
+    s += "(" + e.key.toString() + ", " + e.value + "), "
+  }
+  log_sil(s, sil);
+}
+
+function computeSM(polylist, silent) {
+  log_sil("Input polynomials: " + polylist.map(x => x.toString()), silent);
   // find a polynomial of max degree
   var md = -Infinity;
-  var mdp;
+  var mdp = null;
   for(p of polylist) {
     if(p.degree() > md) {
       md = p.degree();
@@ -123,10 +107,18 @@ function computeSM(polylist) {
     }
   }
 
-  console.log("MAX: ", mdp.toString());
+  function nulltoString(x) {
+    if(x == null) {
+      return "null";
+    }
+    return x.toString();
+  }
+
+  log_sil("p_1 (of max degree): " + nulltoString(mdp), silent);
 
   // base case of recursion
   if(md <= 0) {
+    log_sil("Base case", silent);
     // all polynomials are constants. map accordingly
     var m = [];
     for(p of polylist) {
@@ -154,13 +146,11 @@ function computeSM(polylist) {
   var p0 = mdp.derive();
   var newplist = [p0]
   var pmodp0 = mdp.mod(p0);
-  var newqlist;
-  if(pmodp0.degree() < 0) {
-    newqlist = []
-  } else {
-    newqlist = [mdp.mod(p0)]
-  }
+  var newqlist = [pmodp0];
   var hasZero = false;
+  if(pmodp0.degree() < 0) {
+    hasZero = true;
+  }
   for(p of polylist) {
     if(p != mdp && p.degree() >= 0) {
       newplist.push(p);
@@ -175,8 +165,8 @@ function computeSM(polylist) {
     }
   }
 
-  // console.log("NEW PS: ", newplist.map(x => x.toString()));
-  // console.log("NEW QS: ", newqlist.map(x => ));
+  log_sil("p_1', p_2, ..., p_n: " + newplist.map(x => x.toString()), silent);
+  log_sil("Remainders: " + newqlist.map(nulltoString), silent);
 
   // get sign matrix of new plists
   // de-dup new plist
@@ -188,8 +178,13 @@ function computeSM(polylist) {
     }
   }
   var reclist = m.map(x => x.key);
-  console.log("REC POLYS: ", reclist.map(x => x.toString()));
-  var sm = computeSM(reclist);
+  log_sil("Recursive call on: " + reclist.map(x => x.toString()), silent);
+  var sm;
+  if(printRec) {
+    sm = computeSM(reclist, silent);
+  } else {
+    sm = computeSM(reclist, true);
+  }
 
   // add zero back in if necessary
   if(hasZero) {
@@ -201,10 +196,8 @@ function computeSM(polylist) {
     sm = newsm;
   }
   
-  console.log("Got rec SM: ");
-  printSM(sm);
-
-  console.log("NEWPLIST: ", newplist.map(x => x.toString()));
+  log_sil("Recursive result: ", silent);
+  printSM(sm, silent);
 
   function isRootP(row) {
     if(row.ty != "root") {
@@ -219,19 +212,19 @@ function computeSM(polylist) {
     return null;
   }
 
+  log_sil("Determining sign of p_1 at roots of p_1', p_2, ..., p_n:", silent);
+
   // figure out signs of removed polynomial at roots
   for(var i = 0; i < sm.length ; i++) {
     // if this row is the root of some "p-list" polynomial
     var q = isRootP(sm[i]);
     if(q) {
       // copy sign from corresponding remainder to mdp
-      console.log("remainder: " + q.toString());
       mapSet(sm[i].map, mdp, mapGet(sm[i].map, q));
     }
   }
 
-  console.log("Pre-death 1");
-  printSM(sm);
+  printSM(sm, silent);
 
   // delete unnecessary information from sm
   var newsm = [];
@@ -251,7 +244,6 @@ function computeSM(polylist) {
   }
   sm = newsm;
   newsm = [];
-  // make a pass to patch together adjacent intervals
   var i = 0;
   while(i < sm.length) {
     l = [];
@@ -263,6 +255,8 @@ function computeSM(polylist) {
       newsm.push({map: mapCopy(sm[i].map), ty: sm[i].ty});
       i++;
       continue;
+    } else if(l[0].ty == "neginf" && l[l.length - 1].ty == "posinf") {
+      newsm.push({map: l[0].map, ty: "inf"});
     } else if(l[0].ty == "neginf") {
       newsm.push({map: l[0].map, ty: "neginf"});
     } else if(l[l.length - 1].ty == "posinf") {
@@ -274,21 +268,25 @@ function computeSM(polylist) {
 
   sm = newsm;
 
-  console.log("Pre-death 2");
-  printSM(sm);
+  log_sil("Removing remainder information: ", silent);
+  printSM(sm, silent);
+
+  log_sil("Determining sign on intervals: ", silent);
 
   // go through newsm and inject roots as necessary/infer signs in intervals
   var newsm = [];
   for(var i = 0; i < sm.length; i++) {
-    console.log("Processing: ", sm[i].ty);
+    log_sil("Processing row of type: " + sm[i].ty, silent);
     if(sm[i].ty == "inf") {
       assert(sm.length == 1); // should be only entry
       var leftSign = flipSign(mapGet(sm[i].map, p0));
       var rightSign = mapGet(sm[i].map, p0);
-      console.log("Left sign: ", leftSign, " and right sign: ", rightSign);
+      log_sil("Context:", silent);
+      printSMrow(sm[i], silent);
+      log_sil("Left sign: " + leftSign + " right sign: " + rightSign, silent);
       if((leftSign == "-" && rightSign == "+") || (leftSign == "+" && rightSign == "-")) {
         // inject root
-        console.log("root in interval!!");
+        log_sil("Injecting root in interval", silent);
         var ml = mapCopy(sm[i].map); mapSet(ml, mdp, leftSign);
         var mr = mapCopy(sm[i].map); mapSet(mr, mdp, rightSign);
         var m0 = mapCopy(sm[i].map); mapSet(m0, mdp, "0");
@@ -308,11 +306,14 @@ function computeSM(polylist) {
       assert(sm[i + 1].ty == "root"); // next entry should be a root
       var rightSign = mapGet(sm[i + 1].map, mdp); // get sign of poly at leftmost root
       assert(leftSign != null && rightSign != null);
+      log_sil("Context:", silent);
+      printSMrow(sm[i], silent);
+      printSMrow(sm[i + 1], silent);
       // check for sign change - indicates root in interval
-      console.log("Left sign: ", leftSign, " and right sign: ", rightSign);
+      log_sil("Left sign: " + leftSign + " right sign: " + rightSign, silent);
       if((leftSign == "-" && rightSign == "+") || (leftSign == "+" && rightSign == "-")) {
         // inject root
-        console.log("root in interval!!");
+        log_sil("Injecting root in interval", silent);
         var ml = mapCopy(sm[i].map); mapSet(ml, mdp, leftSign);
         var mr = mapCopy(sm[i].map); mapSet(mr, mdp, rightSign);
         var m0 = mapCopy(sm[i].map); mapSet(m0, mdp, "0");
@@ -323,6 +324,7 @@ function computeSM(polylist) {
         ]);
       } else {
         // no root in interval - copy value from either endpoint
+        log_sil("No root in interval: taking sign as we go to -inf", silent);
         var m = mapCopy(sm[i].map); mapSet(m, mdp, leftSign);
         newsm.push({map: m, ty: "neginf"});
       }
@@ -332,11 +334,14 @@ function computeSM(polylist) {
       assert(sm[i - 1].ty == "root"); // previous entry should be a root
       var leftSign = mapGet(sm[i - 1].map, mdp);
       assert(leftSign != null && rightSign != null);
+      log_sil("Context:", silent);
+      printSMrow(sm[i - 1], silent);
+      printSMrow(sm[i], silent);
       // check for sign change - indicates root in interval
-      console.log("Left sign: ", leftSign, " and right sign: ", rightSign);
+      log_sil("Left sign: " + leftSign + " right sign: " + rightSign, silent);
       if((leftSign == "-" && rightSign == "+") || (leftSign == "+" && rightSign == "-")) {
         // inject root
-        console.log("root in interval!!");
+        log_sil("Injecting root in interval", silent);
         var ml = mapCopy(sm[i].map); mapSet(ml, mdp, leftSign);
         var mr = mapCopy(sm[i].map); mapSet(mr, mdp, rightSign);
         var m0 = mapCopy(sm[i].map); mapSet(m0, mdp, "0");
@@ -347,6 +352,7 @@ function computeSM(polylist) {
         ]);
       } else {
         // no root in interval - copy value from either endpoint
+        log_sil("No root in interval: taking sign as we go to +inf", silent);
         var m = mapCopy(sm[i].map); mapSet(m, mdp, rightSign);
         newsm.push({map: m, ty: "posinf"});
       }
@@ -356,9 +362,14 @@ function computeSM(polylist) {
       var rightSign = mapGet(sm[i + 1].map, mdp);
       assert(leftSign != null && rightSign != null);
       // check for sign change - indicates root in interval
+      log_sil("Context:", silent);
+      printSMrow(sm[i - 1], silent);
+      printSMrow(sm[i], silent);
+      printSMrow(sm[i + 1], silent);
+      log_sil("Left sign: " + leftSign + " right sign: " + rightSign, silent);
       if((leftSign == "-" && rightSign == "+") || (leftSign == "+" && rightSign == "-")) {
         // inject root
-        console.log("sign mismatch, injecting root");
+        log_sil("Injecting root in interval", silent);
         var ml = mapCopy(sm[i].map); mapSet(ml, mdp, leftSign);
         var mr = mapCopy(sm[i].map); mapSet(mr, mdp, rightSign);
         var m0 = mapCopy(sm[i].map); mapSet(m0, mdp, "0");
@@ -369,6 +380,7 @@ function computeSM(polylist) {
         ]);
       } else {
         // no root in interval - copy value from either endpoint
+        log_sil("No root in interval: taking sign of nonzero endpoint", silent);
         var m = mapCopy(sm[i].map);
         if(leftSign == "0") {
           assert(rightSign != "0");
@@ -380,6 +392,7 @@ function computeSM(polylist) {
       }
     } else if(sm[i].ty == "root") {
       // root signs should already be calculated
+      log_sil("Sign at root already calculated", silent);
       var s = mapGet(sm[i].map, mdp);
       assert(s != null);
       var m = mapCopy(sm[i].map)
@@ -387,107 +400,67 @@ function computeSM(polylist) {
     } else {
       throw "illegal row type";
     }
+    log_sil("", silent);
   }
 
-  console.log("Pre-death 3");
-  printSM(newsm);
-  console.log("POLYS: ", polylist.map(x => x.toString()));
+  log_sil("Filtering and merging result", silent);
 
   // final filter
   var retsm = [];
   for(row of newsm) {
     var m = [];
+    var isZero = false;
     for(p of polylist) {
+      if(mapGet(row.map, p) == "0") {
+        isZero = true;
+      }
       if(mapGet(row.map, p) == null) {
+        isZero = true;
         assert(p.degree() < 0);
         mapSet(m, p, "0");
         continue;
       }
       mapSet(m, p, mapGet(row.map, p));
     }
-    retsm.push({map: m, ty: row.ty});
+    if(row.ty != "root" || isZero) {
+      retsm.push({map: m, ty: row.ty});
+    }
   }
 
-  console.log("RETURNING");
-  printSM(retsm);
-  console.log("we out this bitch");
+  // final merge
+  sm = retsm;
+  newsm = [];
+  var i = 0;
+  while(i < sm.length) {
+    l = [];
+    while(i < sm.length && (sm[i].ty == "interval" || sm[i].ty == "neginf" || sm[i].ty == "posinf")) {
+      l.push({map: mapCopy(sm[i].map), ty: sm[i].ty});
+      i++;
+    }
+    if(l.length == 0) {
+      newsm.push({map: mapCopy(sm[i].map), ty: sm[i].ty});
+      i++;
+      continue;
+    } else if(l[0].ty == "neginf" && l[l.length - 1].ty == "posinf") {
+      newsm.push({map: l[0].map, ty: "inf"});
+    } else if(l[0].ty == "neginf") {
+      newsm.push({map: l[0].map, ty: "neginf"});
+    } else if(l[l.length - 1].ty == "posinf") {
+      newsm.push({map: l[l.length - 1].map, ty: "posinf"});
+    } else {
+      newsm.push({map: l[0].map, ty: "interval"});
+    }
+  }
   
-  return retsm;
+  return newsm;
 }
 
-// compute formula truth from sign matrix
-
-function evalMatrix(mat, sl) {
-  if("poly" in mat) {
-    // atomic formula, evaluate using sign info
-    return mat["signs"].indexOf(mapGet(sl, mat["poly"])) >= 0;
-  }
-  if(mat["conn"] == "not") {
-    return !evalMatrix(mat["sf"], sl);
-  }
-  for(subform of mat["sf"]) {
-    var val = evalMatrix(subform, sl)
-    if(mat["conn"] == "and" && !val) {
-      return false;
-    } else if(mat["conn"] == "or" && val) {
-      return true;
-    }
-  }
-  if(mat["conn"] == "and") {
-    return true;
-  } else if (mat["conn"] == "or") {
-    return false;
-  } else {
-    console.log("illegal connective probably");
-  }
+function doSMFull() {
+  document.getElementById("outputSM").innerHTML = "";
+  printRec = document.getElementById("recursePrint").checked;
+  pl = document.getElementById("polylist").value.replace(/ /g,'').split(",");
+  sm = computeSM(pl.map(x => new Polynomial(x)));
+  log("");
+  log("FINAL RESULT:");
+  printSM(sm, false);
 }
-
-function eval(quantifier, formula, sm) {
-  for(e of sm) {
-    var sl = e["map"];
-    var val = evalMatrix(formula, sl);
-    if(quantifier == "forall" && !val) {
-      return false;
-    } else if(quantifier == "exists" && val) {
-      return true;
-    }
-  }
-  if(quantifier == "forall") {
-    return true;
-  } else if(quantifier == "exists") {
-    return false;
-  } else {
-    console.log("illegal quantifier probably");
-  }
-}
-
-function getPlist(form) {
-  if("poly" in form) {
-    // atomic formula: return singleton
-    return [form["poly"]]
-  }
-  if(form["conn"] == "not") {
-    return getPlist(form["sf"]);
-  } else if(form["conn"] == "and" || form["conn"] == "or") {
-    var m = []
-    for(subform of form["sf"]) {
-      var res = getPlist(subform);
-      for(p of res) {
-        mapSet(m, p, "");
-      }
-    }
-    return m.map(x => x.key);
-  } else {
-    console.log("illegal connective probably");
-  }
-}
-
-var plist = getPlist(formula);
-console.log("Polynomial list: ", plist.map(x => x.toString()));
-var sm = computeSM(plist);
-console.log("Sign matrix: ");
-printSM(sm);
-var res = eval(quantifier, formula, sm);
-console.log("Result: ", res);
-
-// console.log("RESULT: " + eval(sm));
