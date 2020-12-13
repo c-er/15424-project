@@ -9,8 +9,8 @@ window.MathJax = {
   }
 };
 </script>
-<script src="Fraction.js"></script>
-<script src="Polynomial.js"></script>
+<script src="implementation/lib/Fraction.js"></script>
+<script src="implementation/lib/Polynomial.js"></script>
 <script src="implementation/signmat.js"></script>
 
 $$
@@ -396,7 +396,7 @@ optimized in the least, and will likely not run in time for large inputs.
 <input type="checkbox" id="recursePrint" name="recursePrint"> <label for="recursePrint"> Print recursively (may generate a lot of output) </label>
 <br>
 <button type="button" onclick="doSMFull();">Run</button>
-<pre id="outputSM">
+<pre id="outputSM"></pre>
 
 # Conclusion
 
