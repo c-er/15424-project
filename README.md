@@ -9,6 +9,8 @@ window.MathJax = {
   }
 };
 </script>
+<script src="Fraction.js"></script>
+<script src="Polynomial.js"></script>
 <script src="implementation/signmat.js"></script>
 
 $$
@@ -389,7 +391,8 @@ output will be produced to trace the steps described above. Here are a couple of
 - If you try your own inputs, please keep them relatively small in length and degree. The implementation is not
 optimized in the least, and will likely not run in time for large inputs.
 
-<input id="polylist" name="polylist"> <label for="polylist">List of polynomials</label>
+<input id="polylist" name="polylist"> <label for="polylist">Comma-separated list of polynomials</label>
+<br>
 <input type="checkbox" id="recursePrint" name="recursePrint"> <label for="recursePrint"> Print recursively (may generate a lot of output) </label>
 <br>
 <button type="button" onclick="doSMFull();">Run</button>
