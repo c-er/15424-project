@@ -422,7 +422,9 @@ means that $p_1$, a polynomial of maximal degree, is constant. But then we would
 recursive case anyway - sets of constant polynomials are handled by the base case. So this case is
 impossible here.
 
-ANIMATION HERE
+<p align="center">
+<img src="animation/gif/pseudo_endpoints.gif">
+</p>
 
 Now that we have assigned pseudo-endpoints to the unbounded intervals, along with the sign of $p_1$
 at these pseudo-endpoints, we proceed with the assumption that every interval has two endpoints, and the
@@ -446,6 +448,9 @@ into three pieces: $(a, c)$, $c$, and $(c, b)$. The signs of all polynomials on 
   root of $p_1$ in $(a, b)$. This implies that there are no roots of $p_1$ in $(a, c)$ or in $(c, b)$. Since
   $p_1$ is positive at $a$, we have that $p_1$ must be positive over all of $(a, c)$; else there would be a root
   of $p_1$ in $(a, c)$. Likewise, since $p_1$ is negative at $b$, $p_1$ must be negative over all of $(c, b)$.
+  <p align="center">
+  <img src="animation/gif/interval_opp.gif">
+  </p>
 - The case where $p_1(a)$ is negative while $p_1(b)$ is positive is exactly dual to this. Again, there must exist
 a root $c$ of $p_1$ in $(a, b)$, splitting the interval into three pieces $(a, c)$, $c$, and $(c, b)$.
 The signs of $p_1', p_2, \dots, p_n$ on the new pieces are copied from their signs on $(a, b)$, and the signs
@@ -488,16 +493,14 @@ Some notes on how to read the output:
 In the implementation it was more convenient to print the roots and intervals as the rows and have an association list mapping
 each polynomial in each row to its sign. For example, here are the "mathematical" and "program" notations for the sign matrix
 of $\{p_1, p_2, p_3\}$, where $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$.
-
-$$
+\\[
 \begin{array}{cccccc}
     & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, \infty) \\
 p_1 & + & 0 & - & 0 & + \\
 p_2 & - & 0 & + & + & + \\
 p_3 & + & + & + & 0 & -
 \end{array}
-$$
-
+\\]
 ```
 neginf: (4x^2-4, +), (x^3+3x^2+3x+1, -), (-5x+5, +), 
 root: (4x^2-4, 0), (x^3+3x^2+3x+1, 0), (-5x+5, +), 
@@ -505,7 +508,6 @@ interval: (4x^2-4, -), (x^3+3x^2+3x+1, +), (-5x+5, +),
 root: (4x^2-4, 0), (x^3+3x^2+3x+1, +), (-5x+5, 0), 
 posinf: (4x^2-4, +), (x^3+3x^2+3x+1, +), (-5x+5, -), 
 ```
-
 - You may observe `null` as a remainder polynomial. This is entered into the remainder list whenever
 actually computing the remainder would result in division by $0$. This is an easily remedied edge case:
 it can only happen when the zero polynomial is among the divisors $p_1', p_2, \dots, p_n$; in such cases
