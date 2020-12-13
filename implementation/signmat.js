@@ -94,7 +94,7 @@ function printSMrow(row, sil) {
 }
 
 function computeSM(polylist, silent) {
-  log_sil("Input polynomials: " + polylist.map(x => x.toString()), silent);
+  log_sil("INPUT POLYNOMIALS: " + polylist.map(x => x.toString()), silent);
   // find a polynomial of max degree
   var md = -Infinity;
   var mdp = null;
@@ -176,7 +176,7 @@ function computeSM(polylist, silent) {
     }
   }
   var reclist = m.map(x => x.key);
-  log_sil("Recursive call on: " + reclist.map(x => x.toString()), silent);
+  log_sil("RECURSIVE CALL ON: " + reclist.map(x => x.toString()), silent);
   var sm;
   if(printRec) {
     sm = computeSM(reclist, silent);
@@ -194,7 +194,7 @@ function computeSM(polylist, silent) {
     sm = newsm;
   }
   
-  log_sil("Recursive result: ", silent);
+  log_sil("RECURSIVE RESULT: ", silent);
   printSM(sm, silent);
 
   function isRootP(row) {
@@ -210,7 +210,7 @@ function computeSM(polylist, silent) {
     return null;
   }
 
-  log_sil("Determining sign of p_1 at roots of p_1', p_2, ..., p_n:", silent);
+  log_sil("DETERMINING SIGN of p_1 AT ROOTS of p_1', p_2, ..., p_n:", silent);
 
   // figure out signs of removed polynomial at roots
   for(var i = 0; i < sm.length ; i++) {
@@ -266,10 +266,10 @@ function computeSM(polylist, silent) {
 
   sm = newsm;
 
-  log_sil("Removing remainder information: ", silent);
+  log_sil("REMOVING REMAINDER INFORMATION AND FIXING MATRIX: ", silent);
   printSM(sm, silent);
 
-  log_sil("Determining sign on intervals: ", silent);
+  log_sil("DETERMINING SIGN ON INTERVALS: ", silent);
 
   // go through newsm and inject roots as necessary/infer signs in intervals
   var newsm = [];
@@ -401,7 +401,7 @@ function computeSM(polylist, silent) {
     log_sil("", silent);
   }
 
-  log_sil("Filtering and merging result", silent);
+  log_sil("FILTERING AND MERGING RESULT", silent);
 
   // final filter
   var retsm = [];

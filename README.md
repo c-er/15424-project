@@ -161,7 +161,8 @@ $q, r \in \Q[x]$ satisfying
 # The Algorithm
 
 Our approach will be to first treat the simpler univariate case: formulas of the form $\forall x\, \varphi$ or $\exists x\, \varphi$
-such that the only variable in $\varphi$ is $x$. Then we will discuss how to generalize to the general case.
+such that the only variable in $\varphi$ is $x$. Unfortunately, due to time constraints, we do not describe the multivariate
+generalization here.
 
 ## Univariate Case
 
@@ -357,7 +358,13 @@ output of the recursive call already, so we worry only about $p_1$.
 We start by going through the roots $x_k$ in the recursively obtained sign matrix. Any time we see
 a $0$ in the column $x_k$ in any of the rows $p_1', p_2, \dots, p_n$ (i.e. $x_k$ is a root of at least one of $p_1', p_2, \dots, p_n$),
 we assign $p_1$ the sign of the corresponding remainder (i.e. $r_1$ for roots of $p_1'$, and $r_i$ for roots of $p_i$, $2 \leq i \leq n$).
-For now, we don't do anything for any of the other columns. Here's an example where $p_1(x) = x^2 -1, p_2(x) = x^2 + 2x$.
+For now, we don't do anything for any of the other columns. Here's an example where $p_1(x) = x^2 -1, p_2(x) = x^2 + 2x$, which gives
+us $p_1'(x) = 2x, p_2(x) = x^2 + 2x, r_1(x) = -1, r_2(x) = -2x - 1$ as the input for the recursive call, and the following
+recursively computed sign matrix:
+
+$$
+\begin{array}{cccccccc} & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, x_3) & x_3 & (x_3, \infty) \\ p_1' & - & - & - & - & - & 0 & + \\ p_2 & + & 0 & - & - & - & 0 & + \\ r_1 & - & - & - & - & - & - & - \\ r_2 & + & + & + & 0 & - & - & - \end{array}
+$$
 
 <p align="center">
 <img src="animation/gif/signmat_roots.gif">
@@ -367,29 +374,148 @@ The column $x_1$ is a root of $p_2$, so the sign of the corresponding remainder 
 The column $x_2$ is not a root of either $p_1'$ or $p_2$, so we don't assign a sign to $p_1$ for that column -
 this is indicated by the $\varnothing$ sign. The column $x_3$ is a root of both $p_1'$ and $p_2$: in the animation
 we choose the lift the sign from $r_1$ to $p_1$, but lifting from $r_2$ would have yielded the same result.
+This step is called `DETERMINING SIGN of p_1 AT ROOTS of p_1', p_2, ..., p_n` in the implementation.
 
 From this point onwards, we don't need any of the information from the remainder polynomials, so we
 implement a step which removes them from the sign matrix. In doing so, we may end up with "root" columns
 which are no longer the root of any polynomial in the matrix (e.g. $x_2$ in the following example). We merge
-these columns with their adjacent intervals.
+these columns with their adjacent intervals to maintain the invariant that the columns of the sign matrix
+alternate between roots and intervals. This step is called `REMOVING REMAINDER INFORMATION AND FIXING MATRIX`
+in the provided implementation.
 
 <p align="center">
 <img src="animation/gif/signmat_condense.gif">
 </p>
 
 Since all roots where we didn't deduce a sign for $p_1$ were removed in this last step, we now have
-a sign matrix with signs for $p_1$ at all roots. We just have to treat the intervals. 
+a sign matrix with signs for $p_1$ at all roots. We just have to treat the intervals. There are two
+questions we have to answer for each interval:
+- Is there a root of $p_1$ in the interval? Since $p_1'$ is part of the recursively computed sign matrix,
+it has no roots in any of the intervals. Our reasoning from before then shows that $p_1$ can have at most
+one root in each interval, so we only have to see if the number of roots is $0$ or $1$.
+- What is the sign of $p_1$ on the interval? Or, if there is a root of $p_1$ in the interval that splits the
+interval into pieces, what is the sign of each polynomial on the new pieces?
+
+There are four different types of intervals: the bi-infinite interval $(-\infty, \infty)$ that typically
+only is produced in the base case, the half-infinite intervals $(-\infty, x_1)$ and $(x_n, \infty)$ that usually
+occur as the first and last columns of the sign matrix, and the typical bounded interval between two consecutive roots
+$(x_i, x_{i + 1})$. Fortunately, they can all be treated using the same logic, but there is an important pre-processing
+step for the unbounded intervals. We give them pseudo-endpoints; these are the signs assumed by $p_1$ as $x \to \infty$
+and $x \to -\infty$ respectively.
+
+These signs can be computed from the sign of the derivative $p_1'$ in the unbounded intervals. Note that
+the sign matrix is already fully populated in the row $p_1'$, so we can simply read off the sign of $p_1'$
+in the necessary intervals.
+- If $p_1'$ is positive as $x \to \infty$ (i.e. if in the interval of the sign matrix which touches $\infty$,
+the sign of $p_1'$ is positive), then $p_1$ must eventually increase forever. Since we're dealing with
+polynomials which cannot have asymptotic growth, increasing forever implies increasing without bound. This means
+that $p_1$ must be positive as $x \to \infty$, so we say that the sign of $p_1$ at the pseudo-endpoint $\infty$ is positive.
+Likewise, if $p_1'$ is negative as $x \to \infty$, the sign of $p_1$ at $\infty$ is negative.
+- If $p_1'$ is positive as $x \to -\infty$ (i.e. if in the interval of the sign matrix which touches $-\infty$,
+the sign of $p_1'$ is positive), then if we go far enough to the left (past all the roots of $p_1$), $p_1$ must
+eventually be decreasing as we move further left towards $-\infty$ (the sign of the derivative gets flipped here
+because $x$ is moving to the left, in the opposite of the canonical direction). So we say that the sign of $p_1$
+at the pseudo-endpoint $-\infty$ is negative. Likewise, if $p_1'$ is negative as $x \to \infty$,
+we say that the sign of $p_1$ at $-\infty$ is positive.
+- The last case, where $p_1'$ is zero on an interval, implies that $p_1'$ is the zero polynomial. This
+means that $p_1$, a polynomial of maximal degree, is constant. But then we wouldn't have entered this
+recursive case anyway - sets of constant polynomials are handled by the base case. So this case is
+impossible here.
+
+ANIMATION HERE
+
+Now that we have assigned pseudo-endpoints to the unbounded intervals, along with the sign of $p_1$
+at these pseudo-endpoints, we proceed with the assumption that every interval has two endpoints, and the
+sign of $p_1$ is known at both endpoints. This is true for the pseudo-endpoints as we just stated, and
+it is true for the "real" endpoints (the roots) because the previous step already determined the signs
+of $p_1$ at all roots in the sign matrix.
+
+Given an interval with endpoints $a, b$ (both are either the pseudo-endpoints $-\infty, \infty$ or roots $x_i$), we split
+into cases based on the sign of $p_1$ at $a$ and $b$. There are 9 possibilities, but fortunately
+many of them are similar.
+- If $p_1(a)$ is positive while $p_1(b)$ is negative, the intermediate value theorem guarantees the
+existence of a root of $p_1$ in $(a, b)$. Note that $(a, b)$ is an interval in a sign matrix containing $p_1'$,
+so $p_1'$ has no roots in $(a, b)$. By our earlier observation, this means that $p_1$ has at most one root
+in $(a, b)$. Thus, $p_1$ has exactly one root in $(a, b)$, which we call $c$. This root splits the interval $(a, b)$
+into three pieces: $(a, c)$, $c$, and $(c, b)$. The signs of all polynomials on these new pieces are determined as follows:
+  - All the "old" polynomials $p_1', p_2, \dots, p_n$ have invariant sign on the entire interval $(a, b)$, so they
+  certainly have invariant sign on the subsets of this interval $(a, c)$, $c$, and $(c, b)$. Thus, the sign
+  of any of these polynomials on the pieces $(a, c)$, $c$, and $(c, b)$ is the same as their sign on $(a, b)$,
+  and we can just copy the sign over.
+  - $p_1$ itself is certainly $0$ at $c$, since $c$ is a root of $p_1$. Moreover, we know that $c$ is the only
+  root of $p_1$ in $(a, b)$. This implies that there are no roots of $p_1$ in $(a, c)$ or in $(c, b)$. Since
+  $p_1$ is positive at $a$, we have that $p_1$ must be positive over all of $(a, c)$; else there would be a root
+  of $p_1$ in $(a, c)$. Likewise, since $p_1$ is negative at $b$, $p_1$ must be negative over all of $(c, b)$.
+- The case where $p_1(a)$ is negative while $p_1(b)$ is positive is exactly dual to this. Again, there must exist
+a root $c$ of $p_1$ in $(a, b)$, splitting the interval into three pieces $(a, c)$, $c$, and $(c, b)$.
+The signs of $p_1', p_2, \dots, p_n$ on the new pieces are copied from their signs on $(a, b)$, and the signs
+of $p_1$ on $(a, c)$, $c$, and $(c, b)$ are negative, zero, and positive respectively.
+- If $p_1(a)$ is positive while $p_1(b)$ is either positive or zero, we look at the sign of $p_1'$ on the interval.
+As discussed before, $p_1$ is not constant, so $p_1'$ is either positive or negative on the interval, implying that
+$p_1$ is either strictly increasing or strictly decreasing on the interval. In the increasing case, since
+$x \in (a, b) \implies x > a$, we have $p_1(x) > p_1(a) > 0$ for all $x \in (a, b)$, and so $p_1$
+has no roots in $(a, b)$ and is positive on $(a, b)$. In the decreasing case, since $x \in (a, b) \implies x < b$,
+we have $p_1(x) > p_1(b) \geq 0$ for all $x \in (a, b)$, and so again $p_1$ has no roots in $(a, b)$ and is positive on $(a, b)$.
+- The cases where $p_1(a)$ is negative and $p_1(b)$ is either negative or zero is identical to the above.
+- The cases where we instead fix $p_1(b)$ to be positive (resp. negative) and allow $p_1(a)$ to be either
+positive or zero (resp. negative or zero) use the same reasoning as well.
+- The last remaining case is of $p_1(a) = p_1(b) = 0$. This is impossible, as the mean value theorem would guarantee
+the existence of $c \in (a, b)$ with $p_1'(c) = (p_1(b) - p_1(a)) / (b - a) = 0$, i.e. a root of $p_1'$ in
+$(a, b)$, which we know cannot exist.
+
+Combining the above reasoning with our pre-processing, we've described now how to compute the signs of $p_1$ on each interval,
+as well as inject roots where necessary. That is, we can deduce signs for $p_1$ on every interval
+in the sign matrix, as well as add new columns as needed when there are roots of $p_1$ that weren't already in the matrix. With this, we've completed
+adding in all the sign information for $p_1$, and the sign information for $p_2, \dots, p_n$ was already in the recursively
+computed sign matrix. Thus, we run one final filtration/merging pass to remove rows corresponding to polynomials
+not in the original input list $p_1, p_2, \dots, p_n$ (this last step is called `FILTERING AND MERGING RESULT`,
+and is very similar to the previous `REMOVING REMAINDER INFORMATION AND FIXING MATRIX` step), and we output the result.
 
 ### Implementation
 
-An implementation of sign matrix computation via this algorithm is provided [here](https://github.com/c-er/15424-project/blob/main/implementation/signmat.js) 
-and is embedded below. Enter a comma separated list of polynomials with rational coefficients. Enough
+We provide an implementation of sign matrix computation via this algorithm [here](https://github.com/c-er/15424-project/blob/main/implementation/signmat.js).
+The implementation is also embedded below. Enter a comma separated list of polynomials with rational coefficients. Enough
 output will be produced to trace the steps described above. Here are a couple of example inputs:
 
 - $p_1(x) = x^2 -1, p_2(x) = x^2 + 2x$ can be entered as `x^2 - 1, x^2 + 2x`.
-- $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$ can be entered as `4x^2 - 4, -5x + 5, (x + 1)^3`.
+- $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$ can be entered as `4x^2 - 4, x^3 + 3x^2 + 3x + 1, -5x + 5`. Expansion must be done manually
+as the parser is not intelligent.
 - If you try your own inputs, please keep them relatively small in length and degree. The implementation is not
 optimized in the least, and will likely not run in time for large inputs.
+
+Some notes on how to read the output:
+- In the presentation above, the columns of the sign matrix were the roots and intervals, while the rows were the polynomials.
+In the implementation it was more convenient to print the roots and intervals as the rows and have an association list mapping
+each polynomial in each row to its sign. For example, here are the "mathematical" and "program" notations for the sign matrix
+of $\{p_1, p_2, p_3\}$, where $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$.
+
+$$
+\begin{array}{cccccc}
+    & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, \infty) \\
+p_1 & + & 0 & - & 0 & + \\
+p_2 & - & 0 & + & + & + \\
+p_3 & + & + & + & 0 & -
+\end{array}
+$$
+
+```
+neginf: (4x^2-4, +), (x^3+3x^2+3x+1, -), (-5x+5, +), 
+root: (4x^2-4, 0), (x^3+3x^2+3x+1, 0), (-5x+5, +), 
+interval: (4x^2-4, -), (x^3+3x^2+3x+1, +), (-5x+5, +), 
+root: (4x^2-4, 0), (x^3+3x^2+3x+1, +), (-5x+5, 0), 
+posinf: (4x^2-4, +), (x^3+3x^2+3x+1, +), (-5x+5, -), 
+```
+
+- You may observe `null` as a remainder polynomial. This is entered into the remainder list whenever
+actually computing the remainder would result in division by $0$. This is an easily remedied edge case:
+it can only happen when the zero polynomial is among the divisors $p_1', p_2, \dots, p_n$; in such cases
+we simply remove the $0$ polynomial before making the recursive call and add it back to the output (by setting
+its sign to $0$ on all roots and intervals) afterwards.
+- In the `DETERMINING SIGN ON INTERVALS` step, each time we encounter an interval, we print the "context" -
+this is the information about the signs on the surrounding roots that is necessary to process the interval.
+- For reasons unknown, the creator of the polynomial/rational number library we use decided to output rational
+numbers in decimal format. For example, the rational number $1/6$ is outputted as `0.1(6)`. Writing rational
+numbers in fraction form for the input seems to work though.
 
 <input id="polylist" name="polylist"> <label for="polylist">Comma-separated list of polynomials</label>
 <br>
@@ -397,8 +523,6 @@ optimized in the least, and will likely not run in time for large inputs.
 <br>
 <button type="button" onclick="doSMFull();">Run</button>
 <pre id="outputSM"></pre>
-
-# Conclusion
 
 # Deliverables
 
