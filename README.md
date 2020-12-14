@@ -495,9 +495,9 @@ each polynomial in each row to its sign. For example, here are the "mathematical
 of $\{p_1, p_2, p_3\}$, where $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$.
 \\[
 \begin{array}{cccccc}
-    & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, \infty) \\\\
-p_1 & + & 0 & - & 0 & + \\\\
-p_2 & - & 0 & + & + & + \\\\
+    & (-\infty, x_1) & x_1 & (x_1, x_2) & x_2 & (x_2, \infty) \\\\\\
+p_1 & + & 0 & - & 0 & + \\\\\\
+p_2 & - & 0 & + & + & + \\\\\\
 p_3 & + & + & + & 0 & -
 \end{array}
 \\]
@@ -530,4 +530,17 @@ numbers in fraction form for the input seems to work though.
 
 # References
 
-Pandoc
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-orig" class="csl-entry" role="doc-biblioentry">
+Cohen, Paul J. 1969. <span>“Decision Procedures for Real and p-Adic Fields.”</span> <em>Communications on Pure and Applied Mathematics</em> 22 (2): 131–51. <a href="https://doi.org/10.1002/cpa.3160220202">https://doi.org/10.1002/cpa.3160220202</a>.
+</div>
+<div id="ref-handbook" class="csl-entry" role="doc-biblioentry">
+Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
+</div>
+<div id="ref-paper1" class="csl-entry" role="doc-biblioentry">
+McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
+</div>
+<div id="ref-textbook" class="csl-entry" role="doc-biblioentry">
+Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
+</div>
+</div>
