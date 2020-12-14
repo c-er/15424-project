@@ -59,38 +59,42 @@ function assert(b) {
 
 // output
 
-function log(s) {
-  var loc = document.getElementById("outputSM");
+function log(s, tg) {
+  if(tg) {
+    var loc = document.getElementById(tg);
+  } else {
+    var loc = document.getElementById("outputSM");
+  }
   var text = document.createTextNode(s + "\n");
   loc.appendChild(text);
 }
 
-function log_sil(s, sil) {
+function log_sil(s, sil, tg) {
   if(sil) {
     return;
   }
-  log(s);
+  log(s, tg);
 }
 
 // print a sign matrix
 
-function printSM(sm, sil) {
+function printSM(sm, sil, tg) {
   for(row of sm) {
     s = row.ty + ": ";
     for(e of row.map) {
       s += "(" + e.key.toString() + ", " + e.value + "), "
     }
-    log_sil(s, sil);
+    log_sil(s, sil, tg);
   }
-  log_sil("", sil);
+  log_sil("", sil, tg);
 }
 
-function printSMrow(row, sil) {
+function printSMrow(row, sil, tg) {
   s = row.ty + ": ";
-  for(e of row.map) {
-    s += "(" + e.key.toString() + ", " + e.value + "), "
+  for(x of row.map) {
+    s += "(" + x.key.toString() + ", " + x.value + "), "
   }
-  log_sil(s, sil);
+  log_sil(s, sil, tg);
 }
 
 function computeSM(polylist, silent) {
@@ -220,7 +224,7 @@ function computeSM(polylist, silent) {
     var q = isRootP(sm[i]);
     if(q) {
       // copy sign from corresponding remainder to mdp
-      log_sil("Copying sign from remainder " + q.toString() + " to " + mdp.toString());
+      log_sil("Copying sign from remainder " + q.toString() + " to " + mdp.toString(), silent);
       mapSet(sm[i].map, mdp, mapGet(sm[i].map, q));
     }
   }

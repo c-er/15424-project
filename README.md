@@ -12,6 +12,7 @@ window.MathJax = {
 <script src="implementation/lib/Fraction.js"></script>
 <script src="implementation/lib/Polynomial.js"></script>
 <script src="implementation/signmat.js"></script>
+<script src="implementation/uni.js"></script>
 
 $$
 \newcommand{\R}{\mathbb{R}}
@@ -489,7 +490,7 @@ computed sign matrix. Thus, we run one final filtration/merging pass to remove r
 not in the original input list $p_1, p_2, \dots, p_n$ (this last step is called `FILTERING AND MERGING RESULT`,
 and is very similar to the previous `REMOVING REMAINDER INFORMATION AND FIXING MATRIX` step), and we output the result.
 
-### Implementation
+### Sign Matrix Calculation Implementation
 
 We provide an implementation of sign matrix computation via this algorithm [here](https://github.com/c-er/15424-project/blob/main/implementation/signmat.js).
 The implementation is also embedded below. Enter a comma separated list of polynomials with rational coefficients. Enough
@@ -521,6 +522,7 @@ interval: (4x^2-4, -), (x^3+3x^2+3x+1, +), (-5x+5, +),
 root: (4x^2-4, 0), (x^3+3x^2+3x+1, +), (-5x+5, 0), 
 posinf: (4x^2-4, +), (x^3+3x^2+3x+1, +), (-5x+5, -), 
 ```
+- The row type `inf` denotes the bi-infinite interval $(-\infty, \infty)$. 
 - In the `DETERMINING SIGN ON INTERVALS` step, each time we encounter an interval, we print the "context" -
 this is the information about the signs on the surrounding roots that is necessary to process the interval.
 - For reasons unknown, the creator of the polynomial/rational number library we use decided to output rational
@@ -533,6 +535,70 @@ numbers in fraction form for the input seems to work though.
 <br>
 <button type="button" onclick="doSMFull();">Run</button>
 <pre id="outputSM"></pre>
+
+### Univariate Decision Procedure Implementation
+
+We provide an implementation of sign matrix computation via this algorithm [here](https://github.com/c-er/15424-project/blob/main/implementation/signmat.js).
+The input format is unfortunately not polished; here are a couple of examples and notes on the input format
+- The formula $\exists x\, (x^2 + 1 \leq 0)$ is inputted as follows:
+```
+{
+  quantifier: "exists",
+  formula: {
+    poly: new Polynomial("x^2+1"),
+    signs: ["-", "0"]
+  }
+}
+```
+- The formula $\forall x\, (\neg(x^2 \leq 0))$ is inputted as follows:
+```
+{
+  quantifier: "forall",
+  formula: {
+    conn: "not",
+    sf: {
+      poly: new Polynomial("x^2+1"),
+      signs: ["-", "0"]
+    }
+  }
+}
+```
+- The formula $\forall x\, [(p_1(x) \geq 0 \wedge p_2(x) \geq 0) \vee (p_3(x) > 0)]$, where $p_1(x) = 4x^2 - 4$, $p_2(x) = (x + 1)^3$, and $p_3(x) = -5x + 5$, is inputted as follows:
+```
+{
+  quantifier: "forall",
+  formula: {
+    conn: "or",
+    sf: [
+      {
+        conn: "and",
+        sf: [
+          {
+            poly: new Polynomial("4x^2-4"),
+            signs: ["+", "0"]
+          },
+          {
+            poly: new Polynomial("x^3+3x^2+3x+1"),
+            signs: ["+", "0"]
+          }
+        ]
+      },
+      {
+        poly: new Polynomial("-5x+5"),
+        signs: ["+"]
+      }
+    ]
+  }
+}
+```
+- When inputting polynomials, it is important to use the variable `x` and to leave no white space in the string.
+- Again, please stick to small examples (in terms of number of unique polynomials and their degree) in order
+for the implementation to complete quickly.
+
+<textarea id="form-inp"></textarea>
+<button type="button" onclick="doUniFull();">Run</button>
+<br>
+<pre id="outputUni">
 
 # Deliverables
 
