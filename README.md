@@ -180,7 +180,8 @@ $q, r \in \Q[x]$ satisfying
 # The Algorithm
 
 Our approach will be to first treat the simpler univariate case: formulas of the form $\forall x\, \varphi$ or $\exists x\, \varphi$
-such that the only variable in $\varphi$ is $x$. Unfortunately, due to time constraints, we do not describe the multivariate
+such that the only variable in $\varphi$ is $x$. Unfortunately, due to time constraints and the absence of the required libraries
+for JavaScript, we do not describe or implement the multivariate
 generalization here.
 
 ## Univariate Case
@@ -546,7 +547,7 @@ numbers in fraction form for the input seems to work though.
 
 [This script](https://github.com/c-er/15424-project/blob/main/implementation/uni.js) combines the sign matrix
 computation with the decision procedure we described earlier to evaluate the truth of univariate formulae.
-The input format is unfortunately not polished; here are a couple of examples and notes on the input format
+The input format is not very polished; here are a couple of examples and notes on the input format
 - The formula $\exists x\, (x^2 + 1 \leq 0)$ is inputted as follows:
 ```
 {
