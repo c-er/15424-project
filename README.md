@@ -55,7 +55,7 @@ A little research would reveal a number of algorithms for automatically deciding
 - **Cylindrical-Algebraic Decomposition (CAD)** is the state of the art when it comes to practical QE, so it doesn't suffer from the inefficiency problem of Tarski's algorithm (CITE HERE). However, it is incredibly complicated: so much so that it took experts in the field 30 years to produce a working implementation (CITE HERE). As such, it is likely not suitable for a student in an introductory CPS class.
 - **Virtual substitution** is efficient (CITE HERE), and simple enough to be part of CMU's introductory 15-424 _Logical Foundations of Cyber-Physical Systems_ course. The only shortcoming of this algorithm is that it isn't complete, in the sense that there are theoretical limitations that prevent it from deciding the truth of arbitrary sentences of real arithmetic (CITE HERE). Understanding this algorithm is thus not equivalent to understanding what's going on behind the scenes of the $\R$ proof rule.
 
-However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm (CITE ORIG HERE). It is simple enough to be described in full in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
+However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm [[1]](#ref-orig). It is simple enough to be described in full in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
 
 ## Related Work
 
@@ -340,7 +340,8 @@ every time we recurse
 - Either we degree the maximum degree of the input set,
 - Or we decrease the number of polynomials in the input having the maximum degree by $1$
 
-It's not difficult to see that a recursion having this property will terminate. Note that the alternative
+Any recursion having this property will terminate; indeed, the property implies that the set of pairs `(# of polys with max degree, max degree)`
+form a strictly decreasing sequence in $\omega^2$, which must be finite as $\omega^2$ is well-ordered. Note that the alternative
 method that we proposed (replacing the remainders with $p_1 + p_1', p_1 + p_2, \dots, p_1 + p_n$), does
 not have the above properties, and there is no reason why the alternative method should produce a terminating
 recursion.
@@ -508,11 +509,6 @@ interval: (4x^2-4, -), (x^3+3x^2+3x+1, +), (-5x+5, +),
 root: (4x^2-4, 0), (x^3+3x^2+3x+1, +), (-5x+5, 0), 
 posinf: (4x^2-4, +), (x^3+3x^2+3x+1, +), (-5x+5, -), 
 ```
-- You may observe `null` as a remainder polynomial. This is entered into the remainder list whenever
-actually computing the remainder would result in division by $0$. This is an easily remedied edge case:
-it can only happen when the zero polynomial is among the divisors $p_1', p_2, \dots, p_n$; in such cases
-we simply remove the $0$ polynomial before making the recursive call and add it back to the output (by setting
-its sign to $0$ on all roots and intervals) afterwards.
 - In the `DETERMINING SIGN ON INTERVALS` step, each time we encounter an interval, we print the "context" -
 this is the information about the signs on the surrounding roots that is necessary to process the interval.
 - For reasons unknown, the creator of the polynomial/rational number library we use decided to output rational
@@ -532,15 +528,15 @@ numbers in fraction form for the input seems to work though.
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-orig" class="csl-entry" role="doc-biblioentry">
-Cohen, Paul J. 1969. <span>“Decision Procedures for Real and p-Adic Fields.”</span> <em>Communications on Pure and Applied Mathematics</em> 22 (2): 131–51. <a href="https://doi.org/10.1002/cpa.3160220202">https://doi.org/10.1002/cpa.3160220202</a>.
+\[1\] Cohen, Paul J. 1969. <span>“Decision Procedures for Real and p-Adic Fields.”</span> <em>Communications on Pure and Applied Mathematics</em> 22 (2): 131–51. <a href="https://doi.org/10.1002/cpa.3160220202">https://doi.org/10.1002/cpa.3160220202</a>.
 </div>
 <div id="ref-handbook" class="csl-entry" role="doc-biblioentry">
-Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
+\[2\] Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
 </div>
 <div id="ref-paper1" class="csl-entry" role="doc-biblioentry">
-McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
+\[3\] McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
 </div>
 <div id="ref-textbook" class="csl-entry" role="doc-biblioentry">
-Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
+\[4\] Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
 </div>
 </div>

@@ -215,13 +215,17 @@ function computeSM(polylist, silent) {
   // figure out signs of removed polynomial at roots
   for(var i = 0; i < sm.length ; i++) {
     // if this row is the root of some "p-list" polynomial
+    log_sil("Processing row:", silent);
+    printSMrow(sm[i], silent);
     var q = isRootP(sm[i]);
     if(q) {
       // copy sign from corresponding remainder to mdp
+      log_sil("Copying sign from remainder " + q.toString() + " to " + mdp.toString());
       mapSet(sm[i].map, mdp, mapGet(sm[i].map, q));
     }
   }
 
+  log_sil("After sign determination at roots: ", silent);
   printSM(sm, silent);
 
   // delete unnecessary information from sm
@@ -274,7 +278,8 @@ function computeSM(polylist, silent) {
   // go through newsm and inject roots as necessary/infer signs in intervals
   var newsm = [];
   for(var i = 0; i < sm.length; i++) {
-    log_sil("Processing row of type: " + sm[i].ty, silent);
+    log_sil("Processing row:", silent);
+    printSMrow(sm[i], silent);
     if(sm[i].ty == "inf") {
       assert(sm.length == 1); // should be only entry
       var leftSign = flipSign(mapGet(sm[i].map, p0));
@@ -400,6 +405,9 @@ function computeSM(polylist, silent) {
     }
     log_sil("", silent);
   }
+
+  log_sil("After intervals resolved: ", silent);
+  printSM(newsm, silent);
 
   log_sil("FILTERING AND MERGING RESULT", silent);
 
