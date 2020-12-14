@@ -50,13 +50,13 @@ $$
 Practically speaking, the real arithmetic proof goals that result from attempts to prove properties of CPS are often prohibitively complex for manual methods.
 
 Given the significance of this result, and the rather mysterious nature of the real arithmetic proof rule, the question "what is really going on here?" likely crosses many students' minds.
-A little research would reveal a number of algorithms for automatically deciding the truth of a sentence of real arithmetic (called quantifier elimination (QE) algorithms), but many of the choices have significant disadvantages:
+A little research would reveal a number of algorithms for automatically deciding the truth of a sentence of real arithmetic (called quantifier elimination (QE) algorithms), but many of the choices have significant disadvantages for someone studing real QE for the first time:
 
 - **Tarski's original algorithm** was a very important theoretical breakthrough, but complicated and so inefficient that it isn't useful for anything besides theoretical purposes [[4]](#ref-handbook). Given the complexity of this algorithm, understanding it would be difficult, and given the inefficiency, interaction with an implementation (which would be very useful for understanding) would not be feasible.
 - **Cylindrical-Algebraic Decomposition (CAD)** is the state of the art when it comes to practical QE, so it doesn't suffer from the inefficiency problem of Tarski's algorithm [[2]](#ref-cad). However, it is incredibly complicated: so much so that it took experts in the field 30 years to produce a working implementation (citation needed). As such, it is likely not suitable for a student in an introductory CPS class.
 - **Virtual substitution** is efficient [[9]](#ref-vsub), and simple enough to be part of CMU's introductory 15-424 _Logical Foundations of Cyber-Physical Systems_ course. The only shortcoming of this algorithm is that it isn't complete, in the sense that there are theoretical limitations (given by the well-known Abel-Ruffini theorem) that prevent it from deciding the truth of arbitrary sentences of real arithmetic. Understanding this algorithm is thus not equivalent to understanding what's going on behind the scenes of the $\R$ proof rule.
 
-However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm [[1]](#ref-orig). It is simple enough to be described in full in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
+However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm [[1]](#ref-orig). It is simple enough to be described in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
 
 ## Related Work
 
@@ -71,7 +71,7 @@ is likely more readable than ours, we improve accessibility and usability of the
 embedding it in a website and enabling verbose output that allows the reader to trace the operation
 of the algorithm. 
 
-Our presentation of the algorithm also differs from both of the above by including _animated_ visualizations
+Our presentation of the algorithm also differs from both of the above in that it includes _animated_ visualizations
 intended to complement text-based explanations.
 
 # Background
@@ -162,6 +162,12 @@ the Cohen-Hörmander algorithm.
 
 **Theorem** (Intermediate value): If $f$ is a continuous function of $x$ (in particular, if $f$ is a polynomial in $x$),
 $a < b$, and the signs of $f(a)$ and $f(b)$ do not match, then $f$ has a root in $[a, b]$.
+
+**Theorem** (Mean value): If $f$ is a differentiable function of $x$ (in particular, if $f$ is a polynomial in $x$),
+and $a < b$, then there exists $c \in (a, b)$ such that
+\\[
+f'(c) = \frac{f(b) - f(a)}{b - a}
+\\]
 
 **Definition** (Polynomials with rational coefficients): $\Q[x]$ denotes the set of all polynomials in $x$
 with coefficients in $\Q$.
@@ -267,8 +273,8 @@ each column of the sign matrix.
 </p>
 
 One important thing to note is that while the sign matrix relies crucially on the ordering of the
-roots of the polynomials involved, it doesn't actually contain any numerical information about the
-roots themselves. In our toy example, it's easy to see that $x_1 = -1$ and $x_2 = 1$, but this isn't
+roots of the polynomials involved, it **doesn't actually contain any numerical information about the roots**
+themselves. In our toy example, it's easy to see that $x_1 = -1$ and $x_2 = 1$, but this isn't
 recorded in the sign matrix, nor is it necessary for the final decision procedure.
 
 ### Computing the Sign Matrix
@@ -538,7 +544,8 @@ numbers in fraction form for the input seems to work though.
 
 ### Univariate Decision Procedure Implementation
 
-We provide an implementation of sign matrix computation via this algorithm [here](https://github.com/c-er/15424-project/blob/main/implementation/signmat.js).
+[This script](https://github.com/c-er/15424-project/blob/main/implementation/uni.js) combines the sign matrix
+computation with the decision procedure we described earlier to evaluate the truth of univariate formulae.
 The input format is unfortunately not polished; here are a couple of examples and notes on the input format
 - The formula $\exists x\, (x^2 + 1 \leq 0)$ is inputted as follows:
 ```
@@ -550,7 +557,7 @@ The input format is unfortunately not polished; here are a couple of examples an
   }
 }
 ```
-- The formula $\forall x\, (\neg(x^2 \leq 0))$ is inputted as follows:
+- The formula $\forall x\, (\neg(x^2 + 1 \leq 0))$ is inputted as follows:
 ```
 {
   quantifier: "forall",
@@ -593,9 +600,9 @@ The input format is unfortunately not polished; here are a couple of examples an
 ```
 - When inputting polynomials, it is important to use the variable `x` and to leave no white space in the string.
 - Again, please stick to small examples (in terms of number of unique polynomials and their degree) in order
-for the implementation to complete quickly.
+for the computation to complete quickly.
 
-<textarea id="form-inp"></textarea>
+<textarea id="form-inp" style="width:100%" rows=80></textarea>
 <button type="button" onclick="doUniFull();">Run</button>
 <br>
 <pre id="outputUni">
@@ -604,10 +611,25 @@ for the implementation to complete quickly.
 
 # Deliverables
 
+This webpage embeds all the deliverables, and serves as both the final project and the term paper.
+We summarize all the deliverables briefly here:
+- The written explanation given in the above sections.
+- The animations that complement the explanations, embedded in the appropriate locations. The code used
+to generate the animations and high-quality renders of the animations are also available; see [here](https://github.com/c-er/15424-project/tree/main/animation)
+- The implementations of the sign matrix calculation and univariate decision procedure are available
+[here](https://github.com/c-er/15424-project/tree/main/implementation). The code is not particularly
+readable (both due to the language choice and our own sloppiness); the aim is for readers to learn by reading the output generated by the code above.
+
 # Acknowledgements
 
 Thanks to Prof. Platzer for making me aware of the Cohen-Hörmander algorithm and providing resources
 to learn more about it.
+
+Thanks to Grant Sanderson and the other [manim](https://github.com/3b1b/manim) developers for the framework,
+without which creating the animations seen above would have been impossible.
+
+Thanks to Robert Eisele (GitHub user [infusion](https://github.com/infusion)) for the [Fraction.js](https://github.com/infusion/Fraction.js) rational number library and the
+[Polynomial.js](https://github.com/infusion/Polynomial.js) univariate polynomial library.
 
 # References
 
