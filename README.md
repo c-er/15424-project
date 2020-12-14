@@ -528,15 +528,15 @@ numbers in fraction form for the input seems to work though.
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-orig" class="csl-entry" role="doc-biblioentry">
-\[1\] Cohen, Paul J. 1969. <span>“Decision Procedures for Real and p-Adic Fields.”</span> <em>Communications on Pure and Applied Mathematics</em> 22 (2): 131–51. <a href="https://doi.org/10.1002/cpa.3160220202">https://doi.org/10.1002/cpa.3160220202</a>.
+[1] Cohen, Paul J. 1969. <span>“Decision Procedures for Real and p-Adic Fields.”</span> <em>Communications on Pure and Applied Mathematics</em> 22 (2): 131–51. <a href="https://doi.org/10.1002/cpa.3160220202">https://doi.org/10.1002/cpa.3160220202</a>.
 </div>
 <div id="ref-handbook" class="csl-entry" role="doc-biblioentry">
-\[2\] Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
+[2] Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
 </div>
 <div id="ref-paper1" class="csl-entry" role="doc-biblioentry">
-\[3\] McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
+[3] McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
 </div>
 <div id="ref-textbook" class="csl-entry" role="doc-biblioentry">
-\[4\] Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
+[4] Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
 </div>
 </div>
