@@ -35,12 +35,12 @@ among these is the development of a logic (such as differential dynamic logic) t
 with a set of inference rules that can be used to construct proofs of these formulae. Manually constructing these computationally-verifiable proofs from the axioms
 of all the formal logics involved would be far too painful even for simple CPS. It thus becomes important to seek methods of automating the proof construction.
 
-While it is impossible for many useful logics to fully automate the proof construction process (CITE HERE), it is certainly possible to automate portions
-of it. Rather surprisingly, a 1931 result by Tarski (CITE HERE), along with related more recent developments (CITE HERE), show that the entire proof construction
+While it is impossible for many useful logics to fully automate the proof construction process [[3]](#ref-godel), it is certainly possible to automate portions
+of it. Rather surprisingly, a 1931 result by Tarski [[7]](#ref-tarski), along with related more recent developments [[5]](#ref-paper1), show that the entire proof construction
 process can be automated once the desired goal has been reduced to proving a formula of real arithmetic. This result is absolutely foundational for CPS verification, both
 from a theoretical and a practical perspective. The existence of an automatic verification procedure for formulae of real arithmetic allows one to abstract away the formal reasoning
 process behind the real arithmetic proof goals, and simply give inference rules such as the following, which holds whenever $\bigwedge \Gamma \implies \bigvee \Delta$ is a valid
-formula of real arithmetic (CITE HERE).
+formula of real arithmetic [[6]](#ref-textbook).
 
 $$
 \inferrule{\ast}{\,\,\Gamma \vdash \Delta\,\,}{\color{blue}{\R}}
@@ -51,15 +51,27 @@ Practically speaking, the real arithmetic proof goals that result from attempts 
 Given the significance of this result, and the rather mysterious nature of the real arithmetic proof rule, the question "what is really going on here?" likely crosses many students' minds.
 A little research would reveal a number of algorithms for automatically deciding the truth of a sentence of real arithmetic (called quantifier elimination (QE) algorithms), but many of the choices have significant disadvantages:
 
-- **Tarski's original algorithm** was a very important theoretical breakthrough, but complicated and so inefficient that it isn't useful for anything besides theoretical purposes (CITE HANDBOOK). Given the complexity of this algorithm, understanding it would be difficult, and given the inefficiency, interaction with an implementation (which would be very useful for understanding) would not be feasible.
-- **Cylindrical-Algebraic Decomposition (CAD)** is the state of the art when it comes to practical QE, so it doesn't suffer from the inefficiency problem of Tarski's algorithm (CITE HERE). However, it is incredibly complicated: so much so that it took experts in the field 30 years to produce a working implementation (CITE HERE). As such, it is likely not suitable for a student in an introductory CPS class.
-- **Virtual substitution** is efficient (CITE HERE), and simple enough to be part of CMU's introductory 15-424 _Logical Foundations of Cyber-Physical Systems_ course. The only shortcoming of this algorithm is that it isn't complete, in the sense that there are theoretical limitations that prevent it from deciding the truth of arbitrary sentences of real arithmetic (CITE HERE). Understanding this algorithm is thus not equivalent to understanding what's going on behind the scenes of the $\R$ proof rule.
+- **Tarski's original algorithm** was a very important theoretical breakthrough, but complicated and so inefficient that it isn't useful for anything besides theoretical purposes [[4]](#ref-handbook). Given the complexity of this algorithm, understanding it would be difficult, and given the inefficiency, interaction with an implementation (which would be very useful for understanding) would not be feasible.
+- **Cylindrical-Algebraic Decomposition (CAD)** is the state of the art when it comes to practical QE, so it doesn't suffer from the inefficiency problem of Tarski's algorithm [[2]](#ref-cad). However, it is incredibly complicated: so much so that it took experts in the field 30 years to produce a working implementation (citation needed). As such, it is likely not suitable for a student in an introductory CPS class.
+- **Virtual substitution** is efficient [[9]](#ref-vsub), and simple enough to be part of CMU's introductory 15-424 _Logical Foundations of Cyber-Physical Systems_ course. The only shortcoming of this algorithm is that it isn't complete, in the sense that there are theoretical limitations (given by the well-known Abel-Ruffini theorem) that prevent it from deciding the truth of arbitrary sentences of real arithmetic. Understanding this algorithm is thus not equivalent to understanding what's going on behind the scenes of the $\R$ proof rule.
 
 However, there is a (not too well-known) alternative that offers a reasonable balance: the **Cohen-Hörmander** algorithm [[1]](#ref-orig). It is simple enough to be described in full in this paper, complete in the sense that it can (in principle) decide the truth of any sentence of real arithmetic, and efficient enough to admit implementations that one can actually interact with. This work thus aims to introduce an audience of students taking introductory logic courses to real quantifier-elimination by providing a writeup, a number of visuals, and an interactive implementation of the Cohen-Hörmander algorithm.
 
 ## Related Work
 
-Mention the CAD visualization guy.
+[[10]](#ref-cadvis) develops a tool that can be used to visualize the data structures
+computed by the cylindrical algebraic decomposition algorithm. This present work is analogous to that one in the
+sense that we provide an implementation that allows users to view and understand the main data structure (the sign matrix)
+computed by the Cohen-Hörmander algorithm.
+
+[[4]](#ref-handbook) presents the Cohen-Hörmander algorithm and provides an implementation in OCaml. Our
+presentation of the algorithm is based on this one. While the implementation provided by this book
+is likely more readable than ours, we improve accessibility and usability of the implementation by
+embedding it in a website and enabling verbose output that allows the reader to trace the operation
+of the algorithm. 
+
+Our presentation of the algorithm also differs from both of the above by including _animated_ visualizations
+intended to complement text-based explanations.
 
 # Background
 
@@ -123,7 +135,7 @@ Some examples include:
 However, not everything that we intuitively think of as a property of the real numbers can actually be
 accurately expressed in this language. A typical example is the supremum property: the assertion that
 every nonempty set of real numbers which is bounded above has a least upper bound has no equivalent
-in this language (CITE HERE). As we shall shortly see, the expressiveness (or lack thereof) of this language
+in this language [[8]](#ref-suprem). As we shall shortly see, the expressiveness (or lack thereof) of this language
 is key to the operation of the Cohen-Hörmander algorithm.
 
 Now we can properly define what the Cohen-Hörmander algorithm actually does. It is a quantifier-elimination
@@ -524,19 +536,42 @@ numbers in fraction form for the input seems to work though.
 
 # Deliverables
 
+# Acknowledgements
+
+Thanks to Prof. Platzer for making me aware of the Cohen-Hörmander algorithm and providing resources
+to learn more about it.
+
 # References
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-orig" class="csl-entry" role="doc-biblioentry">
 [1] Cohen, Paul J. 1969. <span>“Decision Procedures for Real and p-Adic Fields.”</span> <em>Communications on Pure and Applied Mathematics</em> 22 (2): 131–51. <a href="https://doi.org/10.1002/cpa.3160220202">https://doi.org/10.1002/cpa.3160220202</a>.
 </div>
+<div id="ref-cad" class="csl-entry" role="doc-biblioentry">
+[2] Collins, George E. 1975. <span>“Quantifier Elimination for Real Closed Fields by Cylindrical Algebraic Decompostion.”</span> In <em>Automata Theory and Formal Languages</em>, edited by H. Brakhage, 134–83. Berlin, Heidelberg: Springer Berlin Heidelberg.
+</div>
+<div id="ref-godel" class="csl-entry" role="doc-biblioentry">
+[3] Gödel, Kurt. 1931. <span>“<span>Ü</span>ber Formal Unentscheidbare s<span>ä</span>tze Der Principia Mathematica Und Verwandter Systeme i.”</span> <em>Monatshefte f<span>ü</span>r Mathematik Und Physik</em> 38 (1): 173–98. <a href="https://doi.org/10.1007/BF01700692">https://doi.org/10.1007/BF01700692</a>.
+</div>
 <div id="ref-handbook" class="csl-entry" role="doc-biblioentry">
-[2] Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
+[4] Harrison, John. 2009. <em>Handbook of Practical Logic and Automated Reasoning</em>. 1st ed. USA: Cambridge University Press.
 </div>
 <div id="ref-paper1" class="csl-entry" role="doc-biblioentry">
-[3] McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
+[5] McLaughlin, Sean, and John Harrison. 2005. <span>“A Proof-Producing Decision Procedure for Real Arithmetic.”</span> In <em>Automated Deduction – CADE-20</em>, edited by Robert Nieuwenhuis, 295–314. Berlin, Heidelberg: Springer Berlin Heidelberg.
 </div>
 <div id="ref-textbook" class="csl-entry" role="doc-biblioentry">
-[4] Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
+[6] Platzer, Andr. 2018. <em>Logical Foundations of Cyber-Physical Systems</em>. 1st ed. Springer Publishing Company, Incorporated.
+</div>
+<div id="ref-tarski" class="csl-entry" role="doc-biblioentry">
+[7] Tarski, Alfred. 1998. <span>“A Decision Method for Elementary Algebra and Geometry.”</span> In <em>Quantifier Elimination and Cylindrical Algebraic Decomposition</em>, edited by Bob F. Caviness and Jeremy R. Johnson, 24–84. Vienna: Springer Vienna.
+</div>
+<div id="ref-suprem" class="csl-entry" role="doc-biblioentry">
+[8] Väänänen, Jouko. 2020. <span>“<span class="nocase">Second-order and Higher-order Logic</span>.”</span> In <em>The <span>Stanford</span> Encyclopedia of Philosophy</em>, edited by Edward N. Zalta, Fall 2020. <a href="https://plato.stanford.edu/archives/fall2020/entries/logic-higher-order/">https://plato.stanford.edu/archives/fall2020/entries/logic-higher-order/</a>; Metaphysics Research Lab, Stanford University.
+</div>
+<div id="ref-vsub" class="csl-entry" role="doc-biblioentry">
+[9] Weispfenning, V. 1997. <span>“Quantifier Elimination for Real Algebra — the Quadratic Case and Beyond.”</span> <em>Applicable Algebra in Engineering, Communication and Computing</em> 8 (2): 85–101. <a href="https://doi.org/10.1007/s002000050055">https://doi.org/10.1007/s002000050055</a>.
+</div>
+<div id="ref-cadvis" class="csl-entry" role="doc-biblioentry">
+[10] Wilson, David John. 2014. <span>“Advances in Cylindrical Algebraic Decomposition.”</span> Department of Computer Science, University of Bath.
 </div>
 </div>
